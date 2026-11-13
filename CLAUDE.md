@@ -1,52 +1,87 @@
 # Contexto del proyecto: RIBS BBQ - Web de pedidos
 
-Este archivo resume lo acordado en la fase de planeación. Léelo antes de cualquier tarea.
+Resumen de lo acordado. Léelo antes de cualquier tarea. Última actualización: 2026-11-12.
 
 ## Qué es
-Landing de pedidos para RIBS BBQ (costillas barbecue). El cliente ve el producto, llena
-un formulario y el pedido queda registrado en Google Sheets. Idioma del proyecto: español.
+Landing de pedidos para RIBS BBQ (costillas barbecue). El cliente ve el producto y llena
+un formulario. Idioma del proyecto: español.
+- **Hoy (MVP, modo WhatsApp):** el formulario arma el pedido y lo abre en WhatsApp.
+- **Después (modo completo):** el pedido queda registrado en Google Sheets vía Apps Script.
 
 ## Fuente de verdad
-- Especificaciones y tareas: `openspec/changes/add-landing-pedidos/`
-  (`proposal.md`, `design.md`, `tasks.md`, `specs/landing/spec.md`, `specs/pedidos/spec.md`).
+- `openspec/changes/add-landing-pedidos/`: landing y pedidos (`proposal.md`, `design.md`,
+  `tasks.md`, `specs/landing/spec.md`, `specs/pedidos/spec.md`).
+- `openspec/changes/add-despliegue-respaldo/`: hosting, respaldo y CI/CD.
 - Seguir `tasks.md` en orden y marcar cada tarea al terminarla.
 - Todo cambio nuevo empieza como propuesta en `openspec/changes/<nombre>/`.
 
+## Estructura del repositorio
+```
+web/          Frontend: React + Vite + TypeScript + Tailwind (se publica en Cloudflare Pages)
+apps-script/  Backend en Google Apps Script (Code.gs + appsscript.json), en pausa
+openspec/     Especificaciones, diseño y tareas
+docs/         Guías: configuracion-git, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
+scripts/      probar-webapp.sh (pruebas del Web App)
+assets/       Logo y recursos de marca
+```
+
 ## Decisiones tomadas
-- Frontend: React + Vite + TypeScript + Tailwind en la carpeta `web/` de este repositorio
-  (2026-11-12). Lovable quedó en pausa porque no se pudo activar la cuenta; si se retoma,
-  ver `docs/lovable-prompt.md`. `web/.env` lleva solo variables públicas y sí se sube.
-- CD de nivel 1: integración Git de Cloudflare Pages. Dominio propio: pendiente.
-- MVP en **modo WhatsApp** (2026-11-12): Google Sheets y Apps Script en pausa. El
-  formulario abre WhatsApp con el pedido; la jornada se edita en
-  `web/src/config/jornada.ts`. El modo completo se activa con `VITE_APPS_SCRIPT_URL`.
-- La cuenta de Google puede cambiar: nada depende de ella salvo la URL del Apps Script,
-  que es una variable (`VITE_APPS_SCRIPT_URL`).
-- Hosting: **Cloudflare Pages** como primario (confirmado). Propuesto en
-  `openspec/changes/add-despliegue-respaldo/`: Netlify como respaldo en caliente,
-  Lovable para emergencias, dominio propio y DNS en Cloudflare.
-  Vercel solo con plan Pro: Hobby no admite uso comercial.
-- Backend: Google Apps Script como Web App, ejecutado como el dueño de la hoja.
-- Datos: Google Sheets. Pestaña "Pedidos" (ya existe) y pestaña "Config" (por crear).
-- Columnas de "Pedidos": N.º, Nombre completo, Teléfono de contacto, Dirección de entrega,
-  Municipio, Cantidad de platos, Estado del pago, ¿Envió pantallazo?
-- La web llena las seis primeras; "Estado del pago" nace en "Pendiente" y
-  "¿Envió pantallazo?" en "No".
-- Cupo máximo parametrizable (valor inicial: 20) hasta la próxima apertura de pedidos.
-- Contador regresivo por fecha límite parametrizable.
+
+### Frontend
+- React + Vite + TypeScript + Tailwind en `web/`, mobile-first (base 360 px).
+- Lovable en pausa (no se pudo activar la cuenta). Si se retoma: `docs/lovable-prompt.md`.
+- Fuente de datos intercambiable (`web/src/lib/fuenteDatos.ts`):
+  - **Modo WhatsApp** (activo): la jornada sale de `web/src/config/jornada.ts`
+    (fechas, precio, máximo por pedido, salsas con descripción, municipios, abierto/cerrado).
+    Sin cupos restantes ni número de pedido. Los datos del cliente solo van a WhatsApp.
+  - **Modo completo**: se activa con `VITE_APPS_SCRIPT_URL`, sin cambiar la interfaz.
+    Escrito pero no probado contra un backend real.
+- Variables públicas en `web/.env` (sí se sube; nunca secretos). Las variables de
+  Cloudflare Pages tienen prioridad. `.env.local` queda fuera de Git.
+  - `VITE_WHATSAPP_NUMERO` (formato `57XXXXXXXXXX`). Sin él, la web muestra "Pedidos cerrados".
+  - `VITE_APPS_SCRIPT_URL` (vacío = modo WhatsApp).
+- Fotos, testimonios y galería de clientes en `web/src/data/contenido.ts`. Las secciones
+  vacías no se muestran.
+
+### Hosting y despliegue
+- **Cloudflare Pages** como primario (confirmado), CD de nivel 1 con integración Git:
+  root `web`, `npm run build`, salida `dist`, `NODE_VERSION=20`. Guía: `docs/despliegue-cloudflare.md`.
+- Propuesto, sin confirmar: Netlify como respaldo en caliente, Lovable para emergencias,
+  dominio propio con DNS en Cloudflare (dominio pendiente de compra).
+- Vercel solo con plan Pro: Hobby no admite uso comercial.
+
+### Backend (en pausa)
+- Google Apps Script como Web App, ejecutado como el dueño de la hoja.
+  Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
+- La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
+- Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa) y
+  "Municipios" (Nombre, Activo). `configurarHoja()` las crea sin borrar datos.
+- Columnas de "Pedidos" (el script las ubica por nombre): N.º, Nombre completo,
+  Teléfono de contacto, Dirección de entrega, Municipio, Cantidad de platos, Salsas,
+  Estado del pago, ¿Envió pantallazo?, Fecha del pedido.
+  "Estado del pago" nace en "Pendiente" y "¿Envió pantallazo?" en "No".
+- Claves de "Config": cupo_maximo (20), tipo_cupo (`platos`/`pedidos`), max_por_pedido,
+  fecha_apertura, fecha_cierre, fecha_entrega, precio_plato, pedidos_abiertos, whatsapp_numero.
+  El cupo cuenta solo pedidos desde `fecha_apertura`.
+
+### Negocio
+- Titular de la licencia: Oscar Vergara. Derechos reservados.
+- El cupo cuenta platos por defecto; límite y modo parametrizables.
+- Tres salsas (Tradicional, Dulce, Picante), parametrizables con descripción; el cliente
+  elige salsa por plato.
 - El pago se confirma por WhatsApp. La web no muestra ni recibe datos de pago.
-- Automatización de WhatsApp: Fase 2, fuera de alcance por ahora.
-- Licencia: derechos reservados (el dueño quiere proteger el proyecto).
+- Automatización de WhatsApp: Fase 2, fuera de alcance.
 
 ## Datos de referencia (del flyer, no definitivos)
 - Producto: costillas BBQ de 570 g aprox. + 120 g de papas a la francesa rizadas.
 - Precio: $30.000 COP.
-- Jornada de referencia: pedidos hasta el 13 de noviembre de 2026 al mediodía,
-  entregas el 14 de noviembre de 2026. Esa jornada ya no se alcanza con la web;
-  las fechas reales se cargan en "Config" para la siguiente apertura.
+- Jornada cargada hoy en `web/src/config/jornada.ts`: cierre 13 de noviembre de 2026 a
+  las 12:00 (Colombia), entrega 14 de noviembre. Pendiente de confirmar por el dueño.
+- Las descripciones de las salsas en `jornada.ts` son provisionales.
 
 ## Marca
-Logo: `assets/marca/logo-ribs-bbq.jpg` (falta versión PNG con fondo transparente).
+Logo: `assets/marca/logo-ribs-bbq.jpg` (copia en `web/public/`). Falta versión PNG con
+fondo transparente.
 | Uso                   | Color   |
 |-----------------------|---------|
 | Fondo principal       | #2F1C15 |
@@ -56,33 +91,32 @@ Logo: `assets/marca/logo-ribs-bbq.jpg` (falta versión PNG con fondo transparent
 | Promociones           | #B7502B |
 | Apoyo                 | #9A4B24, #733E21, #E1B78A |
 
-Estructura de la landing: cabecera con logo, portada, 4 fotos del producto, formulario
-en el centro, testimonios y galería de clientes al final.
+Estructura de la landing: cabecera con logo, portada con contador, 4 fotos del producto,
+formulario en el centro, testimonios y galería de clientes al final.
 
-## Decisiones confirmadas con el dueño (2026-11-12)
-1. Titular de la licencia: Oscar Vergara.
-2. El cupo cuenta platos por defecto. `cupo_maximo` y `tipo_cupo` (`platos`/`pedidos`)
-   se editan en "Config".
-3. Tres salsas (tradicional, dulce, picante), parametrizables con descripción en la
-   pestaña "Salsas"; el cliente elige salsa por plato.
-4. Municipios en la pestaña "Municipios"; los carga el negocio.
-5. WhatsApp en "Config" (`whatsapp_numero`); no se guarda en el repositorio.
-6. La web es mobile-first (base 360 px).
-
-## Pendientes por decidir (preguntar al dueño antes de asumir)
-1. Fotos reales del producto, sin texto encima.
-2. ¿El repositorio pasa a privado? Si sí, ajustar la sección de seguridad del README.
+## Pendientes (preguntar al dueño antes de asumir)
+1. Número de WhatsApp del negocio (bloquea la salida a producción).
+2. Fechas reales de la jornada y descripciones de las salsas.
+3. Municipios con cobertura (si no hay lista, el cliente escribe el municipio).
+4. Fotos reales del producto, sin texto encima.
+5. Dominio propio.
+6. ¿El repositorio pasa a privado? Si sí, ajustar la sección de seguridad del README.
+7. ¿Netlify como respaldo en caliente?
+8. Cuándo sale de pausa Google Sheets y Apps Script.
 
 ## Reglas obligatorias
 - Git: configuración siempre local, nunca `--global`. Ver `docs/configuracion-git.md`.
   Antes del primer commit en cualquier clon, verificar con `git config --local --list`.
 - Nunca subir datos de clientes (nombres, teléfonos, direcciones) ni exportaciones de la hoja.
-- Nunca subir contraseñas, tokens ni llaves.
+- Nunca subir contraseñas, tokens ni llaves. `web/.env` es solo para valores públicos.
 - La hoja de Google no se comparte con "cualquier persona con el enlace".
-- Toda validación de pedidos se hace en el servidor (Apps Script): cupo, fecha, formato,
-  saneo contra inyección de fórmulas, honeypot y LockService.
+- En modo completo, toda validación de pedidos se hace en el servidor (Apps Script):
+  cupo, fecha, formato, saneo contra inyección de fórmulas, honeypot y LockService.
+  La validación del navegador es solo ayuda para el cliente.
 - Pedir confirmación antes de `git push` y antes de borrar archivos.
 
 ## Siguiente paso
-Tarea 3 de `tasks.md`: crear `apps-script/Code.gs` con `doGet` (estado de la jornada)
-y `doPost` (registro del pedido), según `specs/pedidos/spec.md` y `design.md`.
+1. Crear el proyecto en Cloudflare Pages (lo hace el dueño) con `VITE_WHATSAPP_NUMERO`.
+2. Confirmar fechas de la jornada y revisar la web publicada en celular y escritorio.
+3. Luego: tareas 1.3 (contenido), 5 (pruebas) y 6 (publicación) de
+   `openspec/changes/add-landing-pedidos/tasks.md`.
