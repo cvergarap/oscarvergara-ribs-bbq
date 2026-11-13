@@ -39,12 +39,27 @@ var COL = {
   SALSAS: 'Salsas',
   ESTADO_PAGO: 'Estado del pago',
   PANTALLAZO: '¿Envió pantallazo?',
-  FECHA: 'Fecha del pedido'
+  FECHA: 'Fecha del pedido',
+  ACEPTA_PUBLICIDAD: '¿Acepta publicidad?'
 };
 
 var COLUMNAS_PEDIDOS = [
   COL.NUMERO, COL.NOMBRE, COL.TELEFONO, COL.DIRECCION, COL.MUNICIPIO,
   COL.CANTIDAD, COL.SALSAS, COL.ESTADO_PAGO, COL.PANTALLAZO, COL.FECHA
+];
+
+// Columnas que se usan si existen, sin romper hojas que aún no las tienen.
+var COLUMNAS_OPCIONALES = [COL.ACEPTA_PUBLICIDAD];
+
+// "Estado del pago" de un pedido que llegó con el cupo agotado. No cuenta para el cupo.
+var ESTADO_SOBREPEDIDO = 'Cancelado por Sobrepedidos';
+
+// Claves de "Config" que configurarHoja agrega si faltan (valor inicial).
+var CLAVES_CONFIG = [
+  ['cupo_maximo', 20], ['tipo_cupo', 'platos'], ['max_por_pedido', 5],
+  ['fecha_apertura', ''], ['fecha_cierre', ''], ['fecha_entrega', ''], ['hora_entrega', ''],
+  ['precio_plato', 30000], ['pedidos_abiertos', 'NO'], ['whatsapp_numero', ''],
+  ['instagram_url', ''], ['facebook_url', ''], ['tiktok_url', '']
 ];
 
 // Valores por defecto si una clave de "Config" falta o está vacía.
@@ -58,7 +73,10 @@ var CONFIG_DEFECTO = {
   hora_entrega: '',
   precio_plato: 30000,
   pedidos_abiertos: 'NO',
-  whatsapp_numero: ''
+  whatsapp_numero: '',
+  instagram_url: '',
+  facebook_url: '',
+  tiktok_url: ''
 };
 
 var LIMITES = {
@@ -70,7 +88,6 @@ var LIMITES = {
 var MENSAJES = {
   CERRADO: 'Los pedidos están cerrados. Te esperamos en la próxima apertura.',
   CUPO_AGOTADO: 'Se agotaron los cupos de esta jornada. Te esperamos en la próxima apertura.',
-  CUPO_INSUFICIENTE: 'No hay cupo para esa cantidad. Platos disponibles: ',
   DATOS_INVALIDOS: 'Revisa los datos del formulario.',
   OCUPADO: 'Estamos recibiendo muchos pedidos. Intenta de nuevo en unos segundos.',
   ERROR: 'No pudimos registrar el pedido. Intenta de nuevo o escríbenos por WhatsApp.'
@@ -139,7 +156,16 @@ function construirEstado_() {
     salsas: ctx.salsas,
     municipios: ctx.municipios.map(function (m) { return m.nombre; }),
     whatsapp_numero: ctx.config.whatsapp_numero,
+    redes: redes_(ctx.config),
     ahora: new Date().toISOString()
+  };
+}
+
+function redes_(config) {
+  return {
+    instagram: config.instagram_url,
+    facebook: config.facebook_url,
+    tiktok: config.tiktok_url
   };
 }
 
@@ -159,7 +185,7 @@ function cargarContexto_() {
   if (config.pedidos_abiertos !== 'SI') motivo = 'CERRADO';
   else if (config.fecha_apertura && ahora < config.fecha_apertura) motivo = 'NO_INICIADO';
   else if (!config.fecha_cierre || ahora >= config.fecha_cierre) motivo = 'FECHA_VENCIDA';
-  else if (restantes <= 0) motivo = 'CUPO_AGOTADO';
+  // El cupo agotado NO cierra el formulario: esos pedidos se registran como sobrepedidos.
   else if (!salsas.length || !municipios.length) motivo = 'SIN_CONFIGURAR';
 
   return {
@@ -186,11 +212,15 @@ function calcularUso_(hoja, config) {
   var iFecha = mapa[COL.FECHA];
   var iCant = mapa[COL.CANTIDAD];
   var iNum = mapa[COL.NUMERO];
+  var iEstado = mapa[COL.ESTADO_PAGO];
+  var sobrepedido = claveEncabezado_(ESTADO_SOBREPEDIDO);
   var uso = 0;
 
   filas.forEach(function (fila) {
     // Filas vacías o borradas a medias no cuentan.
     if (fila[iNum] === '' && fila[iCant] === '') return;
+    // Los sobrepedidos registrados no consumen cupo.
+    if (claveEncabezado_(fila[iEstado]) === sobrepedido) return;
     if (config.fecha_apertura) {
       var f = fila[iFecha];
       if (!(f instanceof Date) || f < config.fecha_apertura) return;
@@ -208,9 +238,6 @@ function registrarPedido_(datos) {
   var ctx = cargarContexto_();
 
   if (!ctx.abierto) {
-    if (ctx.motivoCierre === 'CUPO_AGOTADO') {
-      return error_('CUPO_AGOTADO', MENSAJES.CUPO_AGOTADO);
-    }
     return error_('CERRADO', MENSAJES.CERRADO);
   }
 
@@ -220,29 +247,36 @@ function registrarPedido_(datos) {
   }
 
   var consumo = ctx.config.tipo_cupo === 'pedidos' ? 1 : v.cantidad;
+
+  // Cupo agotado: se registra el intento (sin N.º) para medir la demanda no atendida.
+  if (ctx.restantes <= 0) {
+    escribirFila_(ctx.hoja, valoresPedido_(v, '', ESTADO_SOBREPEDIDO));
+    return {
+      ok: false,
+      codigo: 'CUPO_AGOTADO',
+      registrado: true,
+      mensaje: MENSAJES.CUPO_AGOTADO,
+      redes: redes_(ctx.config)
+    };
+  }
+
+  // Quedan cupos, pero no alcanzan: se informa para que el cliente ajuste la cantidad.
   if (consumo > ctx.restantes) {
+    var uno = ctx.restantes === 1;
+    var unidad = ctx.config.tipo_cupo === 'pedidos'
+      ? (uno ? 'pedido' : 'pedidos')
+      : (uno ? 'plato' : 'platos');
     return {
       ok: false,
       codigo: 'CUPO_INSUFICIENTE',
-      mensaje: MENSAJES.CUPO_INSUFICIENTE + ctx.restantes + '.',
+      mensaje: (uno ? 'Solo nos queda ' : 'Solo nos quedan ') + ctx.restantes + ' ' + unidad +
+        '. Ajusta tu pedido y asegura el tuyo.',
       cupos_restantes: ctx.restantes
     };
   }
 
   var numero = siguienteNumero_(ctx.hoja);
-  var valores = {};
-  valores[COL.NUMERO] = numero;
-  valores[COL.NOMBRE] = v.nombre;
-  valores[COL.TELEFONO] = v.telefono;
-  valores[COL.DIRECCION] = v.direccion;
-  valores[COL.MUNICIPIO] = v.municipio;
-  valores[COL.CANTIDAD] = v.cantidad;
-  valores[COL.SALSAS] = v.salsasTexto;
-  valores[COL.ESTADO_PAGO] = 'Pendiente';
-  valores[COL.PANTALLAZO] = 'No';
-  valores[COL.FECHA] = new Date();
-
-  escribirFila_(ctx.hoja, valores);
+  escribirFila_(ctx.hoja, valoresPedido_(v, numero, 'Pendiente'));
 
   return {
     ok: true,
@@ -257,6 +291,23 @@ function registrarPedido_(datos) {
     cupos_restantes: ctx.restantes - consumo,
     whatsapp_numero: ctx.config.whatsapp_numero
   };
+}
+
+/** Fila de "Pedidos" para un pedido validado. */
+function valoresPedido_(v, numero, estadoPago) {
+  var valores = {};
+  valores[COL.NUMERO] = numero;
+  valores[COL.NOMBRE] = v.nombre;
+  valores[COL.TELEFONO] = v.telefono;
+  valores[COL.DIRECCION] = v.direccion;
+  valores[COL.MUNICIPIO] = v.municipio;
+  valores[COL.CANTIDAD] = v.cantidad;
+  valores[COL.SALSAS] = v.salsasTexto;
+  valores[COL.ESTADO_PAGO] = estadoPago;
+  valores[COL.PANTALLAZO] = 'No';
+  valores[COL.FECHA] = new Date();
+  valores[COL.ACEPTA_PUBLICIDAD] = v.aceptaPublicidad ? 'Sí' : 'No';
+  return valores;
 }
 
 function validarPedido_(d, ctx) {
@@ -296,7 +347,8 @@ function validarPedido_(d, ctx) {
     direccion: neutralizarFormula_(direccion),
     municipio: municipio,
     cantidad: salsasRes.cantidad,
-    salsasTexto: salsasRes.texto
+    salsasTexto: salsasRes.texto,
+    aceptaPublicidad: d.acepta_publicidad === true
   };
 }
 
@@ -347,7 +399,9 @@ function escribirFila_(hoja, valores) {
   var ancho = hoja.getLastColumn();
   var fila = new Array(ancho);
   for (var i = 0; i < ancho; i++) fila[i] = '';
-  Object.keys(valores).forEach(function (k) { fila[mapa[k]] = valores[k]; });
+  Object.keys(valores).forEach(function (k) {
+    if (k in mapa) fila[mapa[k]] = valores[k]; // columnas opcionales ausentes se omiten
+  });
 
   var destino = hoja.getLastRow() + 1;
   // El teléfono se guarda como texto para que Sheets no lo convierta en número.
@@ -399,6 +453,10 @@ function mapaColumnas_(hoja) {
     throw new Error('Faltan columnas en "Pedidos": ' + faltan.join(', ') +
       '. Encabezados encontrados: ' + encabezados.map(String).join(' | '));
   }
+  COLUMNAS_OPCIONALES.forEach(function (c) {
+    var k = claveEncabezado_(c);
+    if (k in porClave) mapa[c] = porClave[k];
+  });
   return mapa;
 }
 
@@ -426,7 +484,10 @@ function leerConfig_(libro) {
     hora_entrega: aHora_(valor('hora_entrega')),
     precio_plato: enteroPositivo_(valor('precio_plato'), CONFIG_DEFECTO.precio_plato),
     pedidos_abiertos: String(valor('pedidos_abiertos')).trim().toUpperCase() === 'SI' ? 'SI' : 'NO',
-    whatsapp_numero: String(valor('whatsapp_numero')).replace(/\D/g, '')
+    whatsapp_numero: String(valor('whatsapp_numero')).replace(/\D/g, ''),
+    instagram_url: urlSegura_(valor('instagram_url')),
+    facebook_url: urlSegura_(valor('facebook_url')),
+    tiktok_url: urlSegura_(valor('tiktok_url'))
   };
 }
 
@@ -539,6 +600,12 @@ function aHora_(v) {
   return (m[1].length === 1 ? '0' : '') + m[1] + ':' + m[2];
 }
 
+/** Solo enlaces https; cualquier otro valor se descarta. */
+function urlSegura_(v) {
+  var t = String(v == null ? '' : v).trim();
+  return /^https:\/\/[^\s"'<>]+$/i.test(t) ? t : '';
+}
+
 function isoONulo_(fecha) {
   return fecha ? fecha.toISOString() : null;
 }
@@ -562,7 +629,7 @@ function configurarHoja() {
   var pedidos = libro.getSheetByName(HOJAS.PEDIDOS) || libro.insertSheet(HOJAS.PEDIDOS);
   var ancho = Math.max(pedidos.getLastColumn(), 1);
   var actuales = pedidos.getRange(1, 1, 1, ancho).getValues()[0].map(claveEncabezado_);
-  var faltan = COLUMNAS_PEDIDOS.filter(function (c) {
+  var faltan = COLUMNAS_PEDIDOS.concat(COLUMNAS_OPCIONALES).filter(function (c) {
     return actuales.indexOf(claveEncabezado_(c)) < 0;
   });
   if (faltan.length) {
@@ -571,23 +638,23 @@ function configurarHoja() {
   }
   pedidos.setFrozenRows(1);
 
-  if (!libro.getSheetByName(HOJAS.CONFIG)) {
-    var cfg = libro.insertSheet(HOJAS.CONFIG);
-    cfg.getRange(1, 1, 11, 2).setValues([
-      ['Clave', 'Valor'],
-      ['cupo_maximo', 20],
-      ['tipo_cupo', 'platos'],
-      ['max_por_pedido', 5],
-      ['fecha_apertura', ''],
-      ['fecha_cierre', ''],
-      ['fecha_entrega', ''],
-      ['hora_entrega', ''],
-      ['precio_plato', 30000],
-      ['pedidos_abiertos', 'NO'],
-      ['whatsapp_numero', '']
-    ]);
-    cfg.getRange('B2:B11').setNumberFormat('@');
+  // Config: crea la pestaña si no existe y agrega al final las claves que falten.
+  var cfg = libro.getSheetByName(HOJAS.CONFIG);
+  if (!cfg) {
+    cfg = libro.insertSheet(HOJAS.CONFIG);
+    cfg.getRange(1, 1, 1, 2).setValues([['Clave', 'Valor']]);
     cfg.setFrozenRows(1);
+  }
+  var existentes = cfg.getLastRow() >= 2
+    ? cfg.getRange(2, 1, cfg.getLastRow() - 1, 1).getValues().map(function (f) {
+        return String(f[0]).trim().toLowerCase();
+      })
+    : [];
+  var nuevas = CLAVES_CONFIG.filter(function (c) { return existentes.indexOf(c[0]) < 0; });
+  if (nuevas.length) {
+    var filaIni = cfg.getLastRow() + 1;
+    cfg.getRange(filaIni, 2, nuevas.length, 1).setNumberFormat('@');
+    cfg.getRange(filaIni, 1, nuevas.length, 2).setValues(nuevas);
   }
 
   if (!libro.getSheetByName(HOJAS.SALSAS)) {
@@ -607,7 +674,8 @@ function configurarHoja() {
     mun.setFrozenRows(1);
   }
 
-  console.log('Hoja lista. Columnas agregadas a Pedidos: ' + (faltan.join(', ') || 'ninguna'));
+  console.log('Hoja lista. Columnas agregadas a Pedidos: ' + (faltan.join(', ') || 'ninguna') +
+    '. Claves agregadas a Config: ' + (nuevas.map(function (c) { return c[0]; }).join(', ') || 'ninguna'));
 }
 
 /** Prueba rápida desde el editor: muestra el estado de la jornada en el registro. */

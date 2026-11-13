@@ -10,8 +10,6 @@ type Props = {
 }
 
 export function Portada({ estado, abierto, onVencido }: Props) {
-  const unidad = estado.tipoCupo === 'pedidos' ? 'cupos' : 'platos'
-
   return (
     <section id="inicio" className="mx-auto max-w-5xl px-4 pt-6 pb-10 md:grid md:grid-cols-2 md:items-center md:gap-10 md:pt-12">
       <img
@@ -55,11 +53,6 @@ export function Portada({ estado, abierto, onVencido }: Props) {
             </>
           ) : null}
 
-          {estado.cuposRestantes !== null && abierto && (
-            <p className="mt-4 text-lg font-semibold text-claro">
-              Quedan <span className="text-impacto">{estado.cuposRestantes}</span> {unidad}
-            </p>
-          )}
         </div>
 
         {abierto && (

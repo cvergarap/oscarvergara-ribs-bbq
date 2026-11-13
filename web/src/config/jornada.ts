@@ -22,6 +22,8 @@ export const jornada = {
     { nombre: 'Dulce', descripcion: 'BBQ con un toque dulce, ideal para toda la familia.' },
     { nombre: 'Picante', descripcion: 'BBQ con chile, para los que les gusta el picor.' },
   ],
+  /** Redes sociales (https). En modo completo vienen de la pestaña Config. */
+  redes: { instagram: '', facebook: '', tiktok: '' },
   /** Municipios con cobertura. Si está vacío, el cliente escribe el municipio. */
   municipios: ['Pereira', 'Dosquebradas'] as string[],
 }

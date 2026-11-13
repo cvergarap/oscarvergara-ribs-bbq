@@ -62,8 +62,14 @@ assets/       Logo y recursos de marca
   Teléfono de contacto, Dirección de entrega, Municipio, Cantidad de platos, Salsas,
   Estado del pago, ¿Envió pantallazo?, Fecha del pedido.
   "Estado del pago" nace en "Pendiente" y "¿Envió pantallazo?" en "No".
+  Columna opcional: ¿Acepta publicidad? (Sí/No), autorización de la Ley 1581.
+- Sobrepedidos: con el cupo agotado el formulario sigue abierto; el pedido se registra sin
+  N.º con "Estado del pago" = "Cancelado por Sobrepedidos", no cuenta para el cupo, y la web
+  muestra un popup de cupos agotados con redes sociales (no abre WhatsApp). La web no
+  muestra los cupos restantes. Ver `openspec/changes/add-lista-espera-sobrepedidos/`.
 - Claves de "Config": cupo_maximo (20), tipo_cupo (`platos`/`pedidos`), max_por_pedido,
-  fecha_apertura, fecha_cierre, fecha_entrega, precio_plato, pedidos_abiertos, whatsapp_numero.
+  fecha_apertura, fecha_cierre, fecha_entrega, hora_entrega, precio_plato, pedidos_abiertos,
+  whatsapp_numero, instagram_url, facebook_url, tiktok_url (solo https).
   El cupo cuenta solo pedidos desde `fecha_apertura`.
 
 ### Negocio

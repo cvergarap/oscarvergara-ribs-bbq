@@ -1,12 +1,16 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { enviarPedido } from '../lib/fuenteDatos'
 import { formatoPesos } from '../lib/formato'
-import type { CampoPedido, Errores, Estado, Resumen } from '../lib/tipos'
-import { maximoPermitido, totalPlatos, validarPedido } from '../lib/validacion'
+import type { CampoPedido, Errores, Estado, Redes, Resumen } from '../lib/tipos'
+import { limpiar, maximoPermitido, totalPlatos, validarPedido } from '../lib/validacion'
+
+export type InfoAgotado = { nombre: string; aceptaPublicidad: boolean; redes: Redes }
 
 type Props = {
   estado: Estado
   onConfirmado: (resumen: Resumen) => void
+  /** Cupo agotado: el servidor registró el intento; se muestra el popup en vez de WhatsApp. */
+  onAgotado: (info: InfoAgotado) => void
   onAvisoDatos: () => void
   onRecargarEstado: () => void
 }
@@ -31,13 +35,14 @@ function Campo(props: { id: string; etiqueta: string; error?: string; children: 
   )
 }
 
-export function Formulario({ estado, onConfirmado, onAvisoDatos, onRecargarEstado }: Props) {
+export function Formulario({ estado, onConfirmado, onAgotado, onAvisoDatos, onRecargarEstado }: Props) {
   const [nombre, setNombre] = useState('')
   const [telefono, setTelefono] = useState('')
   const [direccion, setDireccion] = useState('')
   const [municipio, setMunicipio] = useState('')
   const [salsas, setSalsas] = useState<Record<string, number>>({})
   const [aceptaDatos, setAceptaDatos] = useState(false)
+  const [aceptaPublicidad, setAceptaPublicidad] = useState(false)
   const [sitioWeb, setSitioWeb] = useState('')
   const [errores, setErrores] = useState<Errores>({})
   const [mensaje, setMensaje] = useState('')
@@ -46,7 +51,7 @@ export function Formulario({ estado, onConfirmado, onAvisoDatos, onRecargarEstad
 
   const total = totalPlatos(salsas)
   const maximo = maximoPermitido(estado)
-  const pedido = { nombre, telefono, direccion, municipio, salsas, aceptaDatos, sitioWeb }
+  const pedido = { nombre, telefono, direccion, municipio, salsas, aceptaDatos, aceptaPublicidad, sitioWeb }
 
   // Tras el primer intento, los errores se actualizan mientras el cliente corrige.
   const revalidar = (cambios: Partial<typeof pedido>) => {
@@ -83,9 +88,13 @@ export function Formulario({ estado, onConfirmado, onAvisoDatos, onRecargarEstad
         return
       }
       if (r.codigo === 'IGNORADO') return
+      if (r.codigo === 'CUPO_AGOTADO') {
+        onAgotado({ nombre: limpiar(nombre), aceptaPublicidad, redes: r.redes ?? estado.redes })
+        return
+      }
       setErrores(r.errores ?? {})
       setMensaje(r.mensaje)
-      if (['CUPO_AGOTADO', 'CUPO_INSUFICIENTE', 'CERRADO'].includes(r.codigo)) onRecargarEstado()
+      if (['CUPO_INSUFICIENTE', 'CERRADO'].includes(r.codigo)) onRecargarEstado()
     } catch {
       setMensaje('No pudimos enviar el pedido. Revisa tu conexión e intenta de nuevo.')
     } finally {
@@ -287,6 +296,22 @@ export function Formulario({ estado, onConfirmado, onAvisoDatos, onRecargarEstad
               </p>
             )}
           </div>
+
+          {/* Autorización opcional y separada para publicidad (Ley 1581): desmarcada por defecto. */}
+          <label className="flex items-start gap-3 rounded-2xl border-2 border-dashed border-apoyo-3 bg-white/50 p-3">
+            <input
+              id="campo-aceptaPublicidad"
+              type="checkbox"
+              checked={aceptaPublicidad}
+              onChange={(e) => setAceptaPublicidad(e.target.checked)}
+              aria-labelledby="texto-acepta-publicidad"
+              className="mt-0.5 size-6 shrink-0 accent-impacto"
+            />
+            <span id="texto-acepta-publicidad" className="text-sm">
+              <strong>¡Quiero ser de los primeros!</strong> Avísenme por WhatsApp cuando abran nuevos
+              pedidos y de sus promociones. <span className="text-apoyo-2">(Opcional)</span>
+            </span>
+          </label>
 
           {/* Campo trampa para bots: invisible para personas y lectores de pantalla. */}
           <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">

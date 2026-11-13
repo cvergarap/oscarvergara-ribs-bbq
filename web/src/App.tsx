@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { AvisoDatos } from './components/AvisoDatos'
 import { Cabecera } from './components/Cabecera'
 import { Cerrado, Confirmacion, ErrorCarga } from './components/Estados'
-import { Formulario } from './components/Formulario'
+import { Formulario, type InfoAgotado } from './components/Formulario'
+import { ModalAgotado } from './components/ModalAgotado'
 import { Portada } from './components/Portada'
 import { GaleriaClientes, GaleriaProducto, Pie, Testimonios } from './components/Secciones'
 import { MODO, obtenerEstado } from './lib/fuenteDatos'
@@ -15,6 +16,7 @@ export default function App() {
   const [vencido, setVencido] = useState(false)
   const [resumen, setResumen] = useState<Resumen | null>(null)
   const [avisoAbierto, setAvisoAbierto] = useState(false)
+  const [agotado, setAgotado] = useState<InfoAgotado | null>(null)
 
   const cargar = useCallback(async () => {
     try {
@@ -66,6 +68,7 @@ export default function App() {
             estado={estado}
             onConfirmado={alConfirmar}
             onAvisoDatos={() => setAvisoAbierto(true)}
+            onAgotado={setAgotado}
             onRecargarEstado={cargar}
           />
         )}
@@ -76,6 +79,7 @@ export default function App() {
       </main>
       <Pie onAvisoDatos={() => setAvisoAbierto(true)} />
       <AvisoDatos abierto={avisoAbierto} onCerrar={() => setAvisoAbierto(false)} />
+      <ModalAgotado info={agotado} onCerrar={() => setAgotado(null)} />
 
       {import.meta.env.DEV && estado && !estado.whatsappNumero && (
         <p className="fixed right-2 bottom-2 z-30 rounded bg-error px-3 py-2 text-xs text-white">

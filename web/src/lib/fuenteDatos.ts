@@ -56,6 +56,7 @@ function estadoLocal(): Estado {
     salsas: jornada.salsas,
     municipios: jornada.municipios,
     whatsappNumero: WHATSAPP_NUMERO,
+    redes: jornada.redes,
     cuposRestantes: null,
     tipoCupo: null,
     desfaseReloj: 0,
@@ -82,7 +83,7 @@ function pedidoLocal(p: Pedido, estado: Estado): Resultado {
 }
 
 // ---------------------------------------------------------------------------
-// Modo remoto (Google Apps Script). Pendiente de probar contra el backend real.
+// Modo remoto (Google Apps Script). Probado contra la hoja real el 2026-11-13.
 // ---------------------------------------------------------------------------
 
 type EstadoApi = {
@@ -100,7 +101,17 @@ type EstadoApi = {
   salsas: { nombre: string; descripcion: string }[]
   municipios: string[]
   whatsapp_numero: string
+  /** Opcional: versiones anteriores del script no la envían. */
+  redes?: { instagram?: string; facebook?: string; tiktok?: string }
   ahora: string
+}
+
+function redesDe(r?: EstadoApi['redes']) {
+  return {
+    instagram: r?.instagram || jornada.redes.instagram,
+    facebook: r?.facebook || jornada.redes.facebook,
+    tiktok: r?.tiktok || jornada.redes.tiktok,
+  }
 }
 
 async function estadoRemoto(): Promise<Estado> {
@@ -121,6 +132,7 @@ async function estadoRemoto(): Promise<Estado> {
     salsas: d.salsas,
     municipios: d.municipios,
     whatsappNumero: d.whatsapp_numero || WHATSAPP_NUMERO,
+    redes: redesDe(d.redes),
     cuposRestantes: d.cupos_restantes,
     tipoCupo: d.tipo_cupo,
     desfaseReloj: isNaN(ahoraServidor) ? 0 : ahoraServidor - Date.now(),
@@ -140,6 +152,7 @@ async function pedidoRemoto(p: Pedido, estado: Estado): Promise<Resultado> {
       municipio: p.municipio,
       salsas,
       acepta_datos: p.aceptaDatos,
+      acepta_publicidad: p.aceptaPublicidad,
       sitio_web: p.sitioWeb,
     }),
   })
@@ -147,7 +160,14 @@ async function pedidoRemoto(p: Pedido, estado: Estado): Promise<Resultado> {
   if (!d.ok) {
     const errores: Errores = { ...d.errores }
     if (d.errores?.acepta_datos) errores.aceptaDatos = d.errores.acepta_datos
-    return { ok: false, codigo: d.codigo, mensaje: d.mensaje, errores }
+    return {
+      ok: false,
+      codigo: d.codigo,
+      mensaje: d.mensaje,
+      errores,
+      registrado: d.registrado === true,
+      redes: d.redes ? redesDe(d.redes) : estado.redes,
+    }
   }
   return {
     ok: true,

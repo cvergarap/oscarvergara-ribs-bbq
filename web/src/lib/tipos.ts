@@ -1,5 +1,8 @@
 export type Salsa = { nombre: string; descripcion: string }
 
+/** Enlaces https a redes sociales; vacío = no se muestra el botón. */
+export type Redes = { instagram: string; facebook: string; tiktok: string }
+
 export type MotivoCierre =
   | 'CERRADO'
   | 'NO_INICIADO'
@@ -23,6 +26,7 @@ export type Estado = {
   salsas: Salsa[]
   municipios: string[]
   whatsappNumero: string
+  redes: Redes
   /** null en modo WhatsApp: no hay forma de contar cupos sin backend. */
   cuposRestantes: number | null
   tipoCupo: 'platos' | 'pedidos' | null
@@ -46,6 +50,8 @@ export type Pedido = {
   /** { Tradicional: 2, Picante: 1 } */
   salsas: Record<string, number>
   aceptaDatos: boolean
+  /** Opcional: autoriza avisos de aperturas y promociones (Ley 1581). */
+  aceptaPublicidad: boolean
   /** Campo trampa: debe llegar vacío. */
   sitioWeb: string
 }
@@ -67,4 +73,4 @@ export type Errores = Partial<Record<CampoPedido, string>>
 
 export type Resultado =
   | { ok: true; resumen: Resumen }
-  | { ok: false; codigo: string; mensaje: string; errores?: Errores }
+  | { ok: false; codigo: string; mensaje: string; errores?: Errores; registrado?: boolean; redes?: Redes }

@@ -27,11 +27,16 @@ export function AvisoDatos({ abierto, onCerrar }: Props) {
         <div className="mt-3 space-y-3 text-sm leading-relaxed">
           <p>
             En cumplimiento de la Ley 1581 de 2012, RIBS BBQ usa tu nombre, celular, dirección y
-            municipio únicamente para gestionar, confirmar y entregar tu pedido.
+            municipio para gestionar, confirmar y entregar tu pedido. Si la jornada ya agotó sus cupos,
+            guardamos tu solicitud para medir la demanda y planear las próximas aperturas.
           </p>
           <p>
-            Los datos se envían al negocio por WhatsApp cuando confirmas el pedido. No se venden ni se
-            comparten con terceros, y esta página no pide ni guarda datos de pago.
+            Solo si marcas la casilla opcional de avisos, usaremos tu celular para contarte por WhatsApp
+            de nuevas aperturas y promociones. Puedes retirar esa autorización cuando quieras.
+          </p>
+          <p>
+            Tus datos quedan en un registro privado del negocio. No se venden ni se comparten con
+            terceros, y esta página no pide ni guarda datos de pago.
           </p>
           <p>
             Puedes conocer, actualizar o pedir que se eliminen tus datos escribiéndonos por el mismo

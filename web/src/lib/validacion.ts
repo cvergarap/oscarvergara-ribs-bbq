@@ -17,13 +17,12 @@ export function totalPlatos(salsas: Record<string, number>): number {
   return Object.values(salsas).reduce((suma, n) => suma + (n > 0 ? n : 0), 0)
 }
 
-/** Máximo de platos que se pueden pedir con el estado actual. */
+/**
+ * Máximo de platos por pedido. No se limita por los cupos restantes: el cliente no los
+ * ve, y si el cupo ya se agotó el servidor registra el intento como sobrepedido.
+ */
 export function maximoPermitido(estado: Estado): number {
-  const porCupo =
-    estado.tipoCupo === 'platos' && estado.cuposRestantes !== null
-      ? estado.cuposRestantes
-      : Infinity
-  return Math.max(0, Math.min(estado.maxPorPedido, porCupo))
+  return Math.max(0, estado.maxPorPedido)
 }
 
 /**
