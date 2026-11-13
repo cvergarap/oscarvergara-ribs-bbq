@@ -95,6 +95,8 @@ type EstadoApi = {
   precio_plato: number
   fecha_cierre: string | null
   fecha_entrega: string | null
+  /** Opcional: versiones anteriores del script no la envían. */
+  hora_entrega?: string
   salsas: { nombre: string; descripcion: string }[]
   municipios: string[]
   whatsapp_numero: string
@@ -112,7 +114,8 @@ async function estadoRemoto(): Promise<Estado> {
     motivoCierre: d.motivo_cierre,
     fechaCierre: d.fecha_cierre ? new Date(d.fecha_cierre) : null,
     fechaEntrega: d.fecha_entrega,
-    horaEntrega: null,
+    // Si la hoja aún no tiene hora_entrega, se usa la de jornada.ts.
+    horaEntrega: d.hora_entrega || jornada.horaEntrega || null,
     precioPlato: d.precio_plato,
     maxPorPedido: d.max_por_pedido,
     salsas: d.salsas,

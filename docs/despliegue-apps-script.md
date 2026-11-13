@@ -30,6 +30,7 @@ Pestaña **Config** (las fechas en texto, hora de Colombia):
 | fecha_apertura | 2026-11-12 18:00 | Solo cuentan pedidos desde aquí |
 | fecha_cierre | 2026-11-20 12:00 | |
 | fecha_entrega | 2026-11-21 | |
+| hora_entrega | 14:00 | Opcional, 24 h. Si falta, la web usa la de `web/src/config/jornada.ts` |
 | precio_plato | 30000 | |
 | pedidos_abiertos | SI | `NO` cierra todo al instante |
 | whatsapp_numero | 57XXXXXXXXXX | Sin `+`, sin espacios |

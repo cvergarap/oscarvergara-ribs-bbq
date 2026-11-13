@@ -55,6 +55,7 @@ var CONFIG_DEFECTO = {
   fecha_apertura: '',
   fecha_cierre: '',
   fecha_entrega: '',
+  hora_entrega: '',
   precio_plato: 30000,
   pedidos_abiertos: 'NO',
   whatsapp_numero: ''
@@ -134,6 +135,7 @@ function construirEstado_() {
     precio_plato: ctx.config.precio_plato,
     fecha_cierre: isoONulo_(ctx.config.fecha_cierre),
     fecha_entrega: textoFecha_(ctx.config.fecha_entrega),
+    hora_entrega: ctx.config.hora_entrega,
     salsas: ctx.salsas,
     municipios: ctx.municipios.map(function (m) { return m.nombre; }),
     whatsapp_numero: ctx.config.whatsapp_numero,
@@ -421,6 +423,7 @@ function leerConfig_(libro) {
     fecha_apertura: aFecha_(valor('fecha_apertura')),
     fecha_cierre: aFecha_(valor('fecha_cierre')),
     fecha_entrega: aFecha_(valor('fecha_entrega')),
+    hora_entrega: aHora_(valor('hora_entrega')),
     precio_plato: enteroPositivo_(valor('precio_plato'), CONFIG_DEFECTO.precio_plato),
     pedidos_abiertos: String(valor('pedidos_abiertos')).trim().toUpperCase() === 'SI' ? 'SI' : 'NO',
     whatsapp_numero: String(valor('whatsapp_numero')).replace(/\D/g, '')
@@ -525,6 +528,17 @@ function aFecha_(v) {
   return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], (+m[4] || 0) + 5, +m[5] || 0));
 }
 
+/**
+ * Hora de entrega "HH:mm" (24 h). Acepta texto "14:00" o una celda de hora de Sheets.
+ * Devuelve '' si no hay valor válido.
+ */
+function aHora_(v) {
+  if (v instanceof Date && !isNaN(v)) return Utilities.formatDate(v, ZONA_HORARIA, 'HH:mm');
+  var m = String(v == null ? '' : v).trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!m || +m[1] > 23 || +m[2] > 59) return '';
+  return (m[1].length === 1 ? '0' : '') + m[1] + ':' + m[2];
+}
+
 function isoONulo_(fecha) {
   return fecha ? fecha.toISOString() : null;
 }
@@ -559,7 +573,7 @@ function configurarHoja() {
 
   if (!libro.getSheetByName(HOJAS.CONFIG)) {
     var cfg = libro.insertSheet(HOJAS.CONFIG);
-    cfg.getRange(1, 1, 10, 2).setValues([
+    cfg.getRange(1, 1, 11, 2).setValues([
       ['Clave', 'Valor'],
       ['cupo_maximo', 20],
       ['tipo_cupo', 'platos'],
@@ -567,11 +581,12 @@ function configurarHoja() {
       ['fecha_apertura', ''],
       ['fecha_cierre', ''],
       ['fecha_entrega', ''],
+      ['hora_entrega', ''],
       ['precio_plato', 30000],
       ['pedidos_abiertos', 'NO'],
       ['whatsapp_numero', '']
     ]);
-    cfg.getRange('B2:B10').setNumberFormat('@');
+    cfg.getRange('B2:B11').setNumberFormat('@');
     cfg.setFrozenRows(1);
   }
 
