@@ -6,7 +6,7 @@
 - [x] 1.3 Cupo agotado ya no cierra el formulario (solo fecha y `pedidos_abiertos`)
 - [x] 1.4 Columna opcional `¿Acepta publicidad?` y claves opcionales de redes en Config
 - [x] 1.5 `configurarHoja` agrega las claves y la columna que falten, sin borrar datos
-- [ ] 1.6 Publicar nueva versión del Web App (lo hace el dueño)
+- [x] 1.6 Publicar el Web App con el script nuevo (nueva implementación, URL actualizada en web/.env)
 
 ## 2. Web
 - [x] 2.1 Quitar "Quedan N platos" de la portada y el tope por cupo del selector
