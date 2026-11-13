@@ -50,6 +50,7 @@ function estadoLocal(): Estado {
     motivoCierre: motivo,
     fechaCierre: fechaValida ? fechaCierre : null,
     fechaEntrega: jornada.fechaEntrega || null,
+    horaEntrega: jornada.horaEntrega || null,
     precioPlato: jornada.precioPlato,
     maxPorPedido: jornada.maxPorPedido,
     salsas: jornada.salsas,
@@ -75,6 +76,7 @@ function pedidoLocal(p: Pedido, estado: Estado): Resultado {
       salsasTexto: textoSalsas(p.salsas),
       total: cantidad * estado.precioPlato,
       fechaEntrega: estado.fechaEntrega,
+      horaEntrega: estado.horaEntrega,
     },
   }
 }
@@ -110,6 +112,7 @@ async function estadoRemoto(): Promise<Estado> {
     motivoCierre: d.motivo_cierre,
     fechaCierre: d.fecha_cierre ? new Date(d.fecha_cierre) : null,
     fechaEntrega: d.fecha_entrega,
+    horaEntrega: null,
     precioPlato: d.precio_plato,
     maxPorPedido: d.max_por_pedido,
     salsas: d.salsas,
@@ -155,6 +158,7 @@ async function pedidoRemoto(p: Pedido, estado: Estado): Promise<Resultado> {
       salsasTexto: d.resumen.salsas,
       total: d.resumen.total,
       fechaEntrega: d.resumen.fecha_entrega ?? estado.fechaEntrega,
+      horaEntrega: estado.horaEntrega,
     },
   }
 }

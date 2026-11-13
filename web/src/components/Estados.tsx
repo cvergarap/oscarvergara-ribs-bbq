@@ -1,4 +1,4 @@
-import { formatoDia, formatoPesos } from '../lib/formato'
+import { formatoEntrega, formatoPesos } from '../lib/formato'
 import type { MotivoCierre, Resumen } from '../lib/tipos'
 import { enlaceWhatsApp, mensajePedido } from '../lib/whatsapp'
 
@@ -36,8 +36,8 @@ export function Confirmacion({
           </div>
           {resumen.fechaEntrega && (
             <div className="flex justify-between gap-4">
-              <dt className="text-apoyo-2">Día</dt>
-              <dd className="text-right font-semibold">{formatoDia(resumen.fechaEntrega)}</dd>
+              <dt className="text-apoyo-2">Entrega</dt>
+              <dd className="text-right font-semibold">{formatoEntrega(resumen.fechaEntrega, resumen.horaEntrega)}</dd>
             </div>
           )}
           <div className="flex justify-between gap-4 border-t border-apoyo-3 pt-2">

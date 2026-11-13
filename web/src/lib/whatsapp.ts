@@ -1,4 +1,4 @@
-import { formatoDia, formatoPesos } from './formato'
+import { formatoEntrega, formatoPesos } from './formato'
 import type { Resumen } from './tipos'
 
 export function mensajePedido(r: Resumen): string {
@@ -14,7 +14,7 @@ export function mensajePedido(r: Resumen): string {
     `• Platos: ${r.cantidad} (${r.salsasTexto})`,
     `• Total: ${formatoPesos(r.total)}`,
   ]
-  if (r.fechaEntrega) lineas.push(`• Entrega: ${formatoDia(r.fechaEntrega)}`)
+  if (r.fechaEntrega) lineas.push(`• Entrega: ${formatoEntrega(r.fechaEntrega, r.horaEntrega)}`)
   lineas.push('Quedo atento para el pago.')
   return lineas.join('\n')
 }

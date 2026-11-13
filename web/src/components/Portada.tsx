@@ -1,5 +1,5 @@
 import { jornada } from '../config/jornada'
-import { formatoDia, formatoFechaHora, formatoPesos } from '../lib/formato'
+import { formatoEntrega, formatoFechaHora, formatoPesos } from '../lib/formato'
 import type { Estado } from '../lib/tipos'
 import { Contador } from './Contador'
 
@@ -37,7 +37,7 @@ export function Portada({ estado, abierto, onVencido }: Props) {
 
         {estado.fechaEntrega && (
           <p className="mt-2 text-arena">
-            Entrega: <strong className="text-claro">{formatoDia(estado.fechaEntrega)}</strong>
+            Entrega: <strong className="text-claro">{formatoEntrega(estado.fechaEntrega, estado.horaEntrega)}</strong>
           </p>
         )}
 

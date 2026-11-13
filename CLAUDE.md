@@ -75,8 +75,9 @@ assets/       Logo y recursos de marca
 ## Datos de referencia (del flyer, no definitivos)
 - Producto: costillas BBQ de 570 g aprox. + 120 g de papas a la francesa rizadas.
 - Precio: $30.000 COP.
-- Jornada cargada hoy en `web/src/config/jornada.ts`: cierre 13 de noviembre de 2026 a
-  las 12:00 (Colombia), entrega 14 de noviembre. Pendiente de confirmar por el dueño.
+- Jornada confirmada por el dueño (en `web/src/config/jornada.ts`): cierre 13 de
+  noviembre de 2026 a las 12:00 (Colombia), entrega 14 de noviembre a las 14:00.
+- Número de WhatsApp configurado en `web/.env`.
 - Las descripciones de las salsas en `jornada.ts` son provisionales.
 
 ## Marca
@@ -95,8 +96,8 @@ Estructura de la landing: cabecera con logo, portada con contador, 4 fotos del p
 formulario en el centro, testimonios y galería de clientes al final.
 
 ## Pendientes (preguntar al dueño antes de asumir)
-1. Número de WhatsApp del negocio (bloquea la salida a producción).
-2. Fechas reales de la jornada y descripciones de las salsas.
+1. Crear el proyecto en Cloudflare Pages (lo hace el dueño).
+2. Descripciones reales de las salsas.
 3. Municipios con cobertura (si no hay lista, el cliente escribe el municipio).
 4. Fotos reales del producto, sin texto encima.
 5. Dominio propio.
@@ -116,7 +117,7 @@ formulario en el centro, testimonios y galería de clientes al final.
 - Pedir confirmación antes de `git push` y antes de borrar archivos.
 
 ## Siguiente paso
-1. Crear el proyecto en Cloudflare Pages (lo hace el dueño) con `VITE_WHATSAPP_NUMERO`.
-2. Confirmar fechas de la jornada y revisar la web publicada en celular y escritorio.
+1. Crear el proyecto en Cloudflare Pages (lo hace el dueño).
+2. Revisar la web publicada en celular y escritorio.
 3. Luego: tareas 1.3 (contenido), 5 (pruebas) y 6 (publicación) de
    `openspec/changes/add-landing-pedidos/tasks.md`.

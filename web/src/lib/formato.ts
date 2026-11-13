@@ -24,6 +24,17 @@ export function formatoDia(fecha: string | null): string {
   return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
+/** "Sábado, 14 de noviembre, 2:00 p. m." a partir de "2026-11-14" y "14:00". */
+export function formatoEntrega(fecha: string | null, hora: string | null): string {
+  const dia = formatoDia(fecha)
+  const m = (hora ?? '').match(/^(\d{1,2}):(\d{2})$/)
+  if (!dia || !m) return dia
+  const h = Number(m[1])
+  const sufijo = h < 12 ? 'a. m.' : 'p. m.'
+  const h12 = h % 12 === 0 ? 12 : h % 12
+  return `${dia}, ${h12}:${m[2]} ${sufijo}`
+}
+
 /** "13 de noviembre, 12:00 p. m." */
 export function formatoFechaHora(fecha: Date | null): string {
   if (!fecha) return ''

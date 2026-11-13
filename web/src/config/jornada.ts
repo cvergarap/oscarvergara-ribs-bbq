@@ -12,6 +12,8 @@ export const jornada = {
   fechaCierre: '2026-11-13T12:00:00-05:00',
   /** Día de entrega (AAAA-MM-DD). */
   fechaEntrega: '2026-11-14',
+  /** Hora de entrega (HH:mm, 24 h, hora de Colombia). Vacío si no aplica. */
+  horaEntrega: '14:00',
   precioPlato: 30000,
   maxPorPedido: 5,
   producto: 'Costillas BBQ de 570 g aprox. + 120 g de papas a la francesa rizadas',

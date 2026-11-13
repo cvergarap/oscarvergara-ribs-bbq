@@ -16,6 +16,8 @@ export type Estado = {
   fechaCierre: Date | null
   /** AAAA-MM-DD */
   fechaEntrega: string | null
+  /** HH:mm (24 h) */
+  horaEntrega: string | null
   precioPlato: number
   maxPorPedido: number
   salsas: Salsa[]
@@ -58,6 +60,7 @@ export type Resumen = {
   salsasTexto: string
   total: number
   fechaEntrega: string | null
+  horaEntrega: string | null
 }
 
 export type Errores = Partial<Record<CampoPedido, string>>
