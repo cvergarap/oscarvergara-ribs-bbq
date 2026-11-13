@@ -22,14 +22,14 @@
 - [ ] 3.6 Probar con pedidos de prueba: válido, cupo lleno, fecha vencida, datos inválidos
 
 ## 4. Landing (construida en `web/`; Lovable en pausa)
-- [ ] 4.1 Generar la estructura en modo mobile-first (base 360 px): cabecera con logo, portada, 4 fotos, formulario, testimonios, galería, pie
-- [ ] 4.2 Aplicar paleta oficial y tipografía
-- [ ] 4.3 Formulario: nombre, teléfono, dirección, municipio, cantidad, salsa por plato, aceptación de datos
+- [x] 4.1 Generar la estructura en modo mobile-first (base 360 px): cabecera con logo, portada, 4 fotos, formulario, testimonios, galería, pie
+- [x] 4.2 Aplicar paleta oficial y tipografía
+- [x] 4.3 Formulario: nombre, teléfono, dirección, municipio, cantidad, salsa por plato, aceptación de datos
 - [ ] 4.4 Contador regresivo y cupos restantes leídos del backend
-- [ ] 4.5 Estados de cierre: fecha vencida y cupo agotado
-- [ ] 4.6 Pantalla de confirmación con botón a WhatsApp y resumen del pedido
+- [x] 4.5 Estados de cierre: fecha vencida y cupo agotado
+- [x] 4.6 Pantalla de confirmación con botón a WhatsApp y resumen del pedido
 - [ ] 4.7 Conectar el formulario con la URL del Web App (en pausa junto con Google Sheets)
-- [ ] 4.8 Modo WhatsApp sin backend: jornada en `src/config/jornada.ts`, envío por wa.me
+- [x] 4.8 Modo WhatsApp sin backend: jornada en `src/config/jornada.ts`, envío por wa.me
 
 ## 5. Pruebas y seguridad
 - [ ] 5.1 Probar en celular (Android y iPhone) y en computador
@@ -38,7 +38,7 @@
 - [ ] 5.4 Revisar contraste y lectura con la paleta oficial
 
 ## 6. Publicación
-- [ ] 6.1 Publicar desde Lovable
+- [x] 6.1 Publicar en Cloudflare Pages: https://oscarvergara-ribs-bbq.pages.dev (Lovable en pausa)
 - [ ] 6.2 Hacer un pedido real de punta a punta
 - [ ] 6.3 Borrar pedidos de prueba y abrir la jornada
 

@@ -30,9 +30,11 @@ export function formatoEntrega(fecha: string | null, hora: string | null): strin
   const m = (hora ?? '').match(/^(\d{1,2}):(\d{2})$/)
   if (!dia || !m) return dia
   const h = Number(m[1])
-  const sufijo = h < 12 ? 'a. m.' : 'p. m.'
+  // Espacio no separable (U+00A0): "2:00 p. m." nunca se parte en dos lineas.
+  const NBSP = String.fromCharCode(160)
+  const sufijo = h < 12 ? `a.${NBSP}m.` : `p.${NBSP}m.`
   const h12 = h % 12 === 0 ? 12 : h % 12
-  return `${dia}, ${h12}:${m[2]} ${sufijo}`
+  return `${dia}, ${h12}:${m[2]}${NBSP}${sufijo}`
 }
 
 /** "13 de noviembre, 12:00 p. m." */

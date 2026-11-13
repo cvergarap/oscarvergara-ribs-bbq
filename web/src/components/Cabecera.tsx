@@ -3,15 +3,15 @@ type Props = { mostrarBoton: boolean }
 export function Cabecera({ mostrarBoton }: Props) {
   return (
     <header className="sticky top-0 z-20 border-b border-apoyo-2/60 bg-fondo/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 md:h-20">
-        <a href="#inicio" className="block h-12 w-28 overflow-hidden md:h-16 md:w-36" aria-label="RIBS BBQ, inicio">
-          {/* El logo es cuadrado con margen amplio; se recorta al centro. */}
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 md:h-20">
+        <a href="#inicio" className="block shrink-0" aria-label="RIBS BBQ, inicio">
+          {/* Versión recortada del logo (sin margen), completa y sin deformar. */}
           <img
-            src="/logo-ribs-bbq.jpg"
+            src="/logo-ribs-bbq-recorte.jpg"
             alt="RIBS BBQ"
-            className="h-full w-full scale-[1.9] object-cover"
-            width={144}
-            height={64}
+            className="h-12 w-auto object-contain md:h-16"
+            width={309}
+            height={240}
           />
         </a>
         {mostrarBoton && (

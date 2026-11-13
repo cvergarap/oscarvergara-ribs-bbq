@@ -7,7 +7,7 @@
 
 ## 2. Hoy: salida a producción (nivel 1)
 - [x] 2.0 Construir el frontend en `web/` (Lovable en pausa)
-- [ ] 2.3 Crear proyecto en Cloudflare Pages: root `web`, `npm run build`, `dist`, `VITE_WHATSAPP_NUMERO`, `NODE_VERSION=20`
+- [x] 2.3 Crear proyecto en Cloudflare Pages (https://oscarvergara-ribs-bbq.pages.dev): root `web`, `npm run build`, `dist`, `VITE_WHATSAPP_NUMERO`, `NODE_VERSION=20`
 - [ ] 2.4 Crear sitio en Netlify desde el mismo repositorio, con la misma configuración
 - [ ] 2.5 Agregar el dominio como dominio personalizado en ambos; `www` apuntando a Cloudflare Pages con TTL 60 s
 - [ ] 2.6 Hacer un pedido de prueba por cada URL (pages.dev, netlify.app, lovable.app y dominio)
