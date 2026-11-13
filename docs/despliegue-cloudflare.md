@@ -45,6 +45,10 @@ Sin número de WhatsApp, la página publica igual pero muestra "Pedidos cerrados
 
 **Save and Deploy.** Desde ahí, cada push a `main` publica automáticamente.
 
+Solo `main` debe publicar: en **Settings → Builds → Branch control** dejar
+*Preview branch* en **None**. Las ramas `dev` y `qa` se prueban en local
+(ver [flujo-ramas.md](flujo-ramas.md)).
+
 ## 3. Verificar
 - Abrir `https://ribs-bbq.pages.dev` en celular y computador.
 - El contador muestra la fecha de [`web/src/config/jornada.ts`](../web/src/config/jornada.ts).
