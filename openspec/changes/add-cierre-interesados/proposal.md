@@ -11,8 +11,9 @@ cercano y cómico, que además capture nombre y celular para avisar de la próxi
 - **Popup de cierre** con temática de carrera ("llegó tarde a la meta"), en los colores
   de la marca. Aparece al llegar el contador a cero o al entrar con los pedidos cerrados.
   Un **único mensaje**, sin importar el motivo del cierre (fecha, `pedidos_abiertos = NO`
-  o configuración incompleta). Opción visual: pendiente de elegir (A Foto finish,
-  B Podio lleno, C La parrilla corrió más).
+  o configuración incompleta). Opción visual elegida: foto finish con dos fanáticos;
+  uno cruza la meta con el plato de costillas en alto (11:59:59) y el cliente llega
+  segundo, con la mano estirada (12:00:01).
 - Al cerrar el popup queda la portada con un aviso breve de "Pedidos cerrados" y un botón
   para volver a abrirlo.
 - Botón **"Avísame en la próxima"**: el mismo popup pasa a un formulario corto (nombre,
