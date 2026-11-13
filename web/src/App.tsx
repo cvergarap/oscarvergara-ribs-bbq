@@ -17,6 +17,8 @@ export default function App() {
   const [resumen, setResumen] = useState<Resumen | null>(null)
   const [avisoAbierto, setAvisoAbierto] = useState(false)
   const [agotado, setAgotado] = useState<InfoAgotado | null>(null)
+  // Cambiar la clave vuelve a crear el formulario desde cero (campos limpios).
+  const [claveFormulario, setClaveFormulario] = useState(0)
 
   const cargar = useCallback(async () => {
     try {
@@ -45,6 +47,13 @@ export default function App() {
     document.getElementById('pedido')?.scrollIntoView()
   }
 
+  /** Al cerrar el popup de cupos agotados: formulario limpio y de vuelta al inicio. */
+  const alCerrarAgotado = () => {
+    setAgotado(null)
+    setClaveFormulario((k) => k + 1)
+    window.scrollTo({ top: 0 })
+  }
+
   const abierto = !!estado && estado.abierto && !vencido
   const motivo = vencido ? 'FECHA_VENCIDA' : (estado?.motivoCierre ?? 'CERRADO')
 
@@ -65,6 +74,7 @@ export default function App() {
         )}
         {estado && !resumen && abierto && (
           <Formulario
+            key={claveFormulario}
             estado={estado}
             onConfirmado={alConfirmar}
             onAvisoDatos={() => setAvisoAbierto(true)}
@@ -79,7 +89,7 @@ export default function App() {
       </main>
       <Pie onAvisoDatos={() => setAvisoAbierto(true)} />
       <AvisoDatos abierto={avisoAbierto} onCerrar={() => setAvisoAbierto(false)} />
-      <ModalAgotado info={agotado} onCerrar={() => setAgotado(null)} />
+      <ModalAgotado info={agotado} onCerrar={alCerrarAgotado} />
 
       {import.meta.env.DEV && estado && !estado.whatsappNumero && (
         <p className="fixed right-2 bottom-2 z-30 rounded bg-error px-3 py-2 text-xs text-white">
