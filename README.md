@@ -29,7 +29,7 @@ Google Apps Script (Web App)
 Google Sheets: pestañas "Pedidos", "Config", "Salsas" y "Municipios"
 ```
 
-- **Frontend:** Lovable (React + Tailwind), diseño mobile-first.
+- **Frontend:** React + Vite + Tailwind en `web/`, diseño mobile-first, publicado en Cloudflare Pages.
 - **Backend:** Google Apps Script desplegado como Web App.
 - **Datos:** Google Sheets. El cupo (por platos o por pedidos), las fechas, las salsas,
   los municipios y el número de WhatsApp se cambian en la hoja, sin tocar el código.
@@ -45,10 +45,18 @@ apps-script/     Código del backend en Google Apps Script
 assets/          Logo y recursos de marca
 docs/            Guías y decisiones del proyecto
 scripts/         Utilidades de prueba
+web/             Frontend: React + Vite + Tailwind, publicado en Cloudflare Pages
 ```
 
-El frontend vive en un repositorio aparte de la cuenta `cvergarap`, creado y
-sincronizado por Lovable, y se publica en Cloudflare Pages.
+Hoy la web funciona en **modo WhatsApp**: el formulario arma el pedido y lo abre en
+WhatsApp. La jornada se configura en `web/src/config/jornada.ts`. Cuando Google Sheets
+salga de pausa, se activa el modo completo con `VITE_APPS_SCRIPT_URL`.
+
+```bash
+cd web
+npm install
+npm run dev
+```
 
 ## Guías de despliegue
 

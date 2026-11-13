@@ -6,10 +6,8 @@
 - [ ] 1.2 Comprar el dominio y delegar su DNS a Cloudflare (pendiente)
 
 ## 2. Hoy: salida a producción (nivel 1)
-- [ ] 2.0 Crear la cuenta de Lovable (la crea el dueño)
-- [ ] 2.1 Conectar Lovable con la cuenta de GitHub `cvergarap` (crea el repositorio del frontend, privado)
-- [ ] 2.2 Publicar desde Lovable como respaldo de emergencia
-- [ ] 2.3 Crear proyecto en Cloudflare Pages desde el repositorio: `npm run build`, `dist`, `VITE_APPS_SCRIPT_URL`
+- [x] 2.0 Construir el frontend en `web/` (Lovable en pausa)
+- [ ] 2.3 Crear proyecto en Cloudflare Pages: root `web`, `npm run build`, `dist`, `VITE_WHATSAPP_NUMERO`, `NODE_VERSION=20`
 - [ ] 2.4 Crear sitio en Netlify desde el mismo repositorio, con la misma configuración
 - [ ] 2.5 Agregar el dominio como dominio personalizado en ambos; `www` apuntando a Cloudflare Pages con TTL 60 s
 - [ ] 2.6 Hacer un pedido de prueba por cada URL (pages.dev, netlify.app, lovable.app y dominio)

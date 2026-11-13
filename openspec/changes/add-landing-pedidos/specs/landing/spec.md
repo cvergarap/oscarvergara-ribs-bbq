@@ -80,6 +80,32 @@ partir del estado que entrega el backend, sin listas escritas en el código.
 - **WHEN** el negocio agrega una salsa activa en la pestaña "Salsas"
 - **THEN** aparece en el formulario en la siguiente carga, sin volver a publicar la web
 
+### Requirement: Modo WhatsApp sin backend
+Mientras `VITE_APPS_SCRIPT_URL` no esté configurada, la landing MUST funcionar sin
+backend: lee la jornada (fecha de cierre, fecha de entrega, precio, máximo por pedido,
+salsas, municipios, pedidos abiertos) de `src/config/jornada.ts`, valida el formulario
+en el navegador y abre WhatsApp con el pedido escrito. En este modo MUST NOT mostrar
+cupos restantes ni número de pedido, y los datos no salen del navegador salvo hacia
+WhatsApp.
+
+#### Scenario: Pedido en modo WhatsApp
+- **WHEN** no hay URL de backend y el cliente envía un formulario válido
+- **THEN** se abre `https://wa.me/<whatsapp_numero>` con nombre, celular, dirección,
+  municipio, platos por salsa y total
+- **AND** se muestra un resumen con el aviso "Envía el mensaje para confirmar tu pedido"
+
+#### Scenario: Paso al modo completo
+- **WHEN** se configura `VITE_APPS_SCRIPT_URL` y se vuelve a publicar
+- **THEN** la landing usa el backend para el estado y el registro, sin cambiar la interfaz
+
+#### Scenario: Municipios sin definir
+- **WHEN** la lista de municipios de la configuración está vacía
+- **THEN** el campo municipio es un texto libre obligatorio
+
+#### Scenario: Campo trampa en modo WhatsApp
+- **WHEN** el campo trampa oculto tiene contenido
+- **THEN** no se abre WhatsApp
+
 ### Requirement: Testimonios y galería ampliables
 La landing MUST permitir agregar testimonios y fotos de clientes de forma progresiva.
 

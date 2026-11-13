@@ -21,14 +21,15 @@
 - [ ] 3.5 Desplegar como Web App y guardar la URL
 - [ ] 3.6 Probar con pedidos de prueba: válido, cupo lleno, fecha vencida, datos inválidos
 
-## 4. Landing en Lovable
+## 4. Landing (construida en `web/`; Lovable en pausa)
 - [ ] 4.1 Generar la estructura en modo mobile-first (base 360 px): cabecera con logo, portada, 4 fotos, formulario, testimonios, galería, pie
 - [ ] 4.2 Aplicar paleta oficial y tipografía
 - [ ] 4.3 Formulario: nombre, teléfono, dirección, municipio, cantidad, salsa por plato, aceptación de datos
 - [ ] 4.4 Contador regresivo y cupos restantes leídos del backend
 - [ ] 4.5 Estados de cierre: fecha vencida y cupo agotado
 - [ ] 4.6 Pantalla de confirmación con botón a WhatsApp y resumen del pedido
-- [ ] 4.7 Conectar el formulario con la URL del Web App
+- [ ] 4.7 Conectar el formulario con la URL del Web App (en pausa junto con Google Sheets)
+- [ ] 4.8 Modo WhatsApp sin backend: jornada en `src/config/jornada.ts`, envío por wa.me
 
 ## 5. Pruebas y seguridad
 - [ ] 5.1 Probar en celular (Android y iPhone) y en computador

@@ -51,6 +51,14 @@ Cantidad de platos, Salsas, Estado del pago, ¿Envió pantallazo?, Fecha del ped
 - Municipios en una lista de la hoja.
 - Número de WhatsApp en "Config", no en el código.
 
+## Entrega por etapas (decidido 2026-11-12)
+- **MVP (modo WhatsApp):** Google Sheets queda en pausa. La web se publica sin backend:
+  el formulario arma el pedido y lo envía por WhatsApp. La jornada se configura en
+  `src/config/jornada.ts` del repositorio del frontend; el número de WhatsApp en la
+  variable `VITE_WHATSAPP_NUMERO`.
+- **Modo completo:** al desplegar el Apps Script se configura `VITE_APPS_SCRIPT_URL` y
+  entran el registro en la hoja, el cupo y el número de pedido.
+
 ## Fuera de alcance (fases siguientes)
 - Automatización de WhatsApp (Fase 2).
 - Pagos en línea y datos de pago en la web (el pago se confirma por WhatsApp).

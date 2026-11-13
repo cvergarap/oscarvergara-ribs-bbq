@@ -19,6 +19,15 @@ Google Sheets: pestañas "Pedidos", "Config", "Salsas" y "Municipios"
 - Configuración: pestaña "Config" (clave / valor) y listas "Salsas" y "Municipios".
   El negocio cambia cupo, fechas, salsas y municipios sin tocar código.
 
+## Fuente de datos intercambiable en el frontend
+`src/lib/fuenteDatos.ts` expone `obtenerEstado()` y `enviarPedido()` con dos
+implementaciones:
+- **local** (MVP): lee `src/config/jornada.ts`, valida en el navegador y abre WhatsApp.
+- **remota**: llama al Apps Script con el contrato de la decisión 8.
+Se usa la remota solo si `VITE_APPS_SCRIPT_URL` tiene valor. La interfaz no cambia
+entre modos; los campos que solo existen en el remoto (cupos, número de pedido) se
+ocultan cuando vienen vacíos.
+
 ## Decisiones
 1. **La hoja nunca se comparte públicamente.** Solo el script la lee y escribe.
    El script se despliega con "Ejecutar como: yo" y "Acceso: cualquier usuario".

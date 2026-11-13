@@ -13,9 +13,15 @@ un formulario y el pedido queda registrado en Google Sheets. Idioma del proyecto
 - Todo cambio nuevo empieza como propuesta en `openspec/changes/<nombre>/`.
 
 ## Decisiones tomadas
-- Frontend en Lovable (React + Tailwind), sincronizado a un repositorio aparte de la cuenta
-  `cvergarap`, creado por Lovable. Este repositorio guarda specs, docs y Apps Script.
+- Frontend: React + Vite + TypeScript + Tailwind en la carpeta `web/` de este repositorio
+  (2026-11-12). Lovable quedó en pausa porque no se pudo activar la cuenta; si se retoma,
+  ver `docs/lovable-prompt.md`. `web/.env` lleva solo variables públicas y sí se sube.
 - CD de nivel 1: integración Git de Cloudflare Pages. Dominio propio: pendiente.
+- MVP en **modo WhatsApp** (2026-11-12): Google Sheets y Apps Script en pausa. El
+  formulario abre WhatsApp con el pedido; la jornada se edita en
+  `web/src/config/jornada.ts`. El modo completo se activa con `VITE_APPS_SCRIPT_URL`.
+- La cuenta de Google puede cambiar: nada depende de ella salvo la URL del Apps Script,
+  que es una variable (`VITE_APPS_SCRIPT_URL`).
 - Hosting: **Cloudflare Pages** como primario (confirmado). Propuesto en
   `openspec/changes/add-despliegue-respaldo/`: Netlify como respaldo en caliente,
   Lovable para emergencias, dominio propio y DNS en Cloudflare.

@@ -33,9 +33,10 @@ cambiar el enlace que ya tienen los clientes.
 
 ## Decisiones confirmadas con el dueño
 - 2026-11-12: el proveedor primario es **Cloudflare Pages**.
-- 2026-11-12: la cuenta de GitHub es `cvergarap`. Este repositorio
-  (`cvergarap/oscarvergara-ribs-bbq`) guarda specs, docs y Apps Script; el frontend vive
-  en un repositorio aparte de la misma cuenta, creado y sincronizado por Lovable.
+- 2026-11-12: la cuenta de GitHub es `cvergarap`.
+- 2026-11-12 (cambio): Lovable no se pudo activar. El frontend se construye a mano en
+  `web/` de este repositorio y Cloudflare Pages compila con *Root directory* = `web`.
+  Si Lovable se retoma, se evalúa mover el frontend a un repositorio aparte.
 - 2026-11-12: CD de nivel 1 (integración Git de Cloudflare Pages). GitHub Actions queda
   para después.
 

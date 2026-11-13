@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* Paleta oficial RIBS BBQ (ver CLAUDE.md). */
+@theme {
+  --color-fondo: #2f1c15;
+  --color-impacto: #ef7224;
+  --color-claro: #fdeed6;
+  --color-arena: #f3d8b7;
+  --color-promo: #b7502b;
+  --color-apoyo-1: #9a4b24;
+  --color-apoyo-2: #733e21;
+  --color-apoyo-3: #e1b78a;
+  --color-error: #8f2a10;
+  --color-whatsapp: #25d366;
+
+  --font-titulo: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+  --font-texto: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-claro);
+  font-family: var(--font-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
