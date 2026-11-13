@@ -1,0 +1,21 @@
+# Material de traspaso (copia local, no se versiona)
+traspaso-ribs-bbq/
+traspaso-ribs-bbq.zip
+
+# Exportaciones de la hoja de pedidos (contienen datos de clientes)
+*.csv
+*.xlsx
+*.xls
+*.ods
+
+# Secretos y configuración local
+.env
+.env.*
+.clasprc.json
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

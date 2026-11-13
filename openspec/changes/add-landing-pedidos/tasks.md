@@ -2,26 +2,29 @@
 
 ## 1. Preparación
 - [ ] 1.1 Crear cuentas del negocio: Google, GitHub, Lovable
-- [ ] 1.2 Confirmar supuestos de proposal.md (cupo por pedidos, receta única, municipios, WhatsApp)
+- [x] 1.2 Confirmar supuestos de proposal.md (cupo por platos parametrizable, 3 salsas parametrizables, municipios y WhatsApp en la hoja)
 - [ ] 1.3 Reunir contenido: logo PNG transparente y 4 fotos del producto sin texto
+- [x] 1.4 Configurar Git de forma local según docs/configuracion-git.md y verificar con `git config --local --list`
 
 ## 2. Google Sheets
-- [ ] 2.1 Verificar encabezados de la pestaña "Pedidos" (8 columnas, en el orden acordado)
-- [ ] 2.2 Crear pestaña "Config" con: cupo_maximo, fecha_cierre, fecha_entrega, precio_plato, max_por_pedido, pedidos_abiertos
+- [ ] 2.1 Ajustar encabezados de la pestaña "Pedidos" (10 columnas: se agregan "Salsas" y "Fecha del pedido")
+- [ ] 2.2 Crear pestaña "Config" con: cupo_maximo, tipo_cupo, max_por_pedido, fecha_apertura, fecha_cierre, fecha_entrega, precio_plato, pedidos_abiertos, whatsapp_numero
 - [ ] 2.3 Confirmar que la hoja NO está compartida con "cualquier persona con el enlace"
+- [ ] 2.4 Crear pestaña "Salsas" (Nombre, Descripción, Activa) con Tradicional, Dulce y Picante
+- [ ] 2.5 Crear pestaña "Municipios" (Nombre, Activo) y cargar los municipios con cobertura
 
 ## 3. Apps Script (backend)
 - [ ] 3.1 Crear el script vinculado a la hoja
-- [ ] 3.2 Implementar doGet: devuelve cupos restantes, fecha de cierre, fecha de entrega, precio
-- [ ] 3.3 Implementar doPost: validar campos, cupo y fecha; asignar N.º; guardar fila
-- [ ] 3.4 Agregar LockService, saneo contra fórmulas y honeypot
+- [x] 3.2 Implementar doGet: devuelve cupos restantes, tipo de cupo, fechas, precio, salsas, municipios y WhatsApp
+- [x] 3.3 Implementar doPost: validar campos, salsas, municipio, cupo y fecha; asignar N.º; guardar fila
+- [x] 3.4 Agregar LockService, saneo contra fórmulas y honeypot
 - [ ] 3.5 Desplegar como Web App y guardar la URL
 - [ ] 3.6 Probar con pedidos de prueba: válido, cupo lleno, fecha vencida, datos inválidos
 
 ## 4. Landing en Lovable
-- [ ] 4.1 Generar la estructura: cabecera con logo, portada, 4 fotos, formulario, testimonios, galería, pie
+- [ ] 4.1 Generar la estructura en modo mobile-first (base 360 px): cabecera con logo, portada, 4 fotos, formulario, testimonios, galería, pie
 - [ ] 4.2 Aplicar paleta oficial y tipografía
-- [ ] 4.3 Formulario: nombre, teléfono, dirección, municipio, cantidad, aceptación de datos
+- [ ] 4.3 Formulario: nombre, teléfono, dirección, municipio, cantidad, salsa por plato, aceptación de datos
 - [ ] 4.4 Contador regresivo y cupos restantes leídos del backend
 - [ ] 4.5 Estados de cierre: fecha vencida y cupo agotado
 - [ ] 4.6 Pantalla de confirmación con botón a WhatsApp y resumen del pedido

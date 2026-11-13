@@ -3,19 +3,21 @@
 ## Arquitectura
 ```
 Cliente (navegador)
-   |  GET  estado  -> cupos restantes, fecha de cierre, precio
+   |  GET  estado  -> cupos restantes, fechas, precio, salsas, municipios, WhatsApp
    |  POST pedido  -> datos del formulario
    v
 Google Apps Script (Web App, se ejecuta como el dueño de la hoja)
    v
-Google Sheets: pestaña "Pedidos" + pestaña "Config"
+Google Sheets: pestañas "Pedidos", "Config", "Salsas" y "Municipios"
 ```
 
-- Frontend: Lovable (React + Tailwind), publicado desde Lovable.
+- Frontend: Lovable (React + Tailwind), publicado desde Lovable. **Mobile-first:**
+  la mayoría de clientes llega por WhatsApp desde el celular; las clases base de
+  Tailwind son para celular y `sm:`/`md:`/`lg:` solo amplían.
   Vercel Hobby no admite uso comercial, por eso no se usa en esta fase.
 - Backend: un solo Apps Script desplegado como Web App.
-- Configuración: pestaña "Config" (clave / valor). El negocio cambia cupo y fechas
-  sin tocar código.
+- Configuración: pestaña "Config" (clave / valor) y listas "Salsas" y "Municipios".
+  El negocio cambia cupo, fechas, salsas y municipios sin tocar código.
 
 ## Decisiones
 1. **La hoja nunca se comparte públicamente.** Solo el script la lee y escribe.
@@ -26,14 +28,32 @@ Google Sheets: pestaña "Pedidos" + pestaña "Config"
 4. **N.º consecutivo** lo asigna el script, no el cliente.
 5. **Sin secretos en el frontend.** La URL del Web App es pública por naturaleza;
    por eso toda validación vive en el script.
+6. **Cupo por jornada.** Cuentan los pedidos con "Fecha del pedido" igual o posterior a
+   `fecha_apertura`. Con `tipo_cupo = platos` se suma "Cantidad de platos"; con
+   `pedidos` se cuentan filas. Un pedido se rechaza si su cantidad supera lo que queda.
+7. **Columnas por nombre.** El script ubica cada columna por su encabezado, no por su
+   posición, para tolerar que el negocio reordene o agregue columnas.
+8. **Contrato del POST.** El cuerpo es JSON enviado como `text/plain` (evita la
+   verificación previa de CORS que Apps Script no responde):
+   ```json
+   {
+     "nombre": "...", "telefono": "3001234567", "direccion": "...",
+     "municipio": "...", "salsas": { "Tradicional": 2, "Picante": 1 },
+     "acepta_datos": true, "sitio_web": ""
+   }
+   ```
+   La cantidad de platos es la suma de `salsas`. `sitio_web` es el honeypot.
+   Respuesta: `{ "ok": true, "numero": 12, "resumen": {...} }` o
+   `{ "ok": false, "codigo": "CUPO_AGOTADO", "mensaje": "..." }`.
 
 ## Seguridad
 - Validar tipo, longitud y formato de cada campo en el script.
 - Teléfono: 10 dígitos, empieza por 3. Cantidad: entero entre 1 y `max_por_pedido`.
+- Municipio y salsas deben existir y estar activos en sus pestañas.
 - Neutralizar inyección de fórmulas: si un texto empieza por `=`, `+`, `-` o `@`,
   anteponer `'` antes de guardar.
-- Campo trampa (honeypot) oculto: si llega con contenido, descartar en silencio.
-- El GET de estado devuelve solo cupos restantes, fechas y precio. Nunca datos de clientes.
+- Campo trampa (honeypot) oculto: si llega con contenido, responder éxito falso y no guardar.
+- El GET de estado nunca devuelve datos de clientes.
 - Aviso de tratamiento de datos (Ley 1581 de 2012) con casilla de aceptación obligatoria.
 
 ## Marca
