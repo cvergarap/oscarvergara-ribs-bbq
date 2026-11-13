@@ -7,7 +7,7 @@ import { Portada } from './components/Portada'
 import { GaleriaClientes, GaleriaProducto, Pie, Testimonios } from './components/Secciones'
 import { MODO, obtenerEstado } from './lib/fuenteDatos'
 import type { Estado, Resumen } from './lib/tipos'
-import { abrirWhatsApp, enlaceWhatsApp, mensajePedido } from './lib/whatsapp'
+import { abrirWhatsAppSiEsCelular, enlacesWhatsApp, mensajePedido } from './lib/whatsapp'
 
 export default function App() {
   const [estado, setEstado] = useState<Estado | null>(null)
@@ -39,7 +39,7 @@ export default function App() {
 
   const alConfirmar = (r: Resumen) => {
     setResumen(r)
-    if (estado) abrirWhatsApp(enlaceWhatsApp(estado.whatsappNumero, mensajePedido(r)))
+    if (estado) abrirWhatsAppSiEsCelular(enlacesWhatsApp(estado.whatsappNumero, mensajePedido(r)))
     document.getElementById('pedido')?.scrollIntoView()
   }
 

@@ -19,16 +19,47 @@ export function mensajePedido(r: Resumen): string {
   return lineas.join('\n')
 }
 
-export function enlaceWhatsApp(numero: string, mensaje: string): string {
-  return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
+export type EnlacesWhatsApp = {
+  /** wa.me: en celular abre la app directo. */
+  universal: string
+  /** whatsapp://: abre WhatsApp para escritorio si está instalado. */
+  app: string
+  /** WhatsApp Web: requiere sesión iniciada en el navegador. */
+  web: string
 }
 
-/** En celular abre la app en la misma pestaña; en computador, WhatsApp Web en otra. */
-export function abrirWhatsApp(url: string): void {
-  const esTactil = window.matchMedia('(pointer: coarse)').matches
-  if (esTactil) {
-    window.location.href = url
-  } else {
-    window.open(url, '_blank', 'noopener,noreferrer')
+export function enlacesWhatsApp(numero: string, mensaje: string): EnlacesWhatsApp {
+  const texto = encodeURIComponent(mensaje)
+  return {
+    universal: `https://wa.me/${numero}?text=${texto}`,
+    app: `whatsapp://send?phone=${numero}&text=${texto}`,
+    web: `https://web.whatsapp.com/send?phone=${numero}&text=${texto}`,
+  }
+}
+
+/** Celular o tableta: ahí wa.me abre la app sin pasos intermedios. */
+export function esCelular(): boolean {
+  return (
+    window.matchMedia('(pointer: coarse)').matches ||
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  )
+}
+
+/**
+ * En celular abre la app de inmediato. En computador no abre nada solo: la pantalla de
+ * confirmación ofrece elegir entre la app de escritorio y WhatsApp Web, porque wa.me en
+ * computador pasa por una página intermedia que confunde al cliente.
+ */
+export function abrirWhatsAppSiEsCelular(enlaces: EnlacesWhatsApp): void {
+  if (esCelular()) window.location.href = enlaces.universal
+}
+
+/** Copia texto al portapapeles; devuelve false si el navegador no lo permite. */
+export async function copiarTexto(texto: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(texto)
+    return true
+  } catch {
+    return false
   }
 }

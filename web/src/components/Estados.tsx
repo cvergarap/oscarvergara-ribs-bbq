@@ -1,6 +1,12 @@
+import { useState } from 'react'
 import { formatoEntrega, formatoPesos } from '../lib/formato'
 import type { MotivoCierre, Resumen } from '../lib/tipos'
-import { enlaceWhatsApp, mensajePedido } from '../lib/whatsapp'
+import { copiarTexto, enlacesWhatsApp, esCelular, mensajePedido } from '../lib/whatsapp'
+
+const claseBotonVerde =
+  'flex min-h-14 w-full items-center justify-center rounded-full bg-whatsapp px-6 text-lg font-bold text-fondo transition hover:brightness-105'
+const claseBotonBorde =
+  'flex min-h-12 w-full items-center justify-center rounded-full border-2 border-fondo px-6 font-semibold transition hover:bg-white/60'
 
 export function Confirmacion({
   resumen,
@@ -11,7 +17,11 @@ export function Confirmacion({
   whatsappNumero: string
   onNuevo: () => void
 }) {
-  const url = enlaceWhatsApp(whatsappNumero, mensajePedido(resumen))
+  const mensaje = mensajePedido(resumen)
+  const enlaces = enlacesWhatsApp(whatsappNumero, mensaje)
+  const [celular] = useState(esCelular)
+  const [copiado, setCopiado] = useState<'si' | 'no' | null>(null)
+  const copiar = async () => setCopiado((await copiarTexto(mensaje)) ? 'si' : 'no')
   const titulo =
     resumen.numero !== null ? `¡Pedido #${resumen.numero} registrado!` : '¡Tu pedido está listo!'
 
@@ -46,14 +56,41 @@ export function Confirmacion({
           </div>
         </dl>
 
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-6 flex min-h-14 w-full items-center justify-center rounded-full bg-whatsapp px-6 text-lg font-bold text-fondo transition hover:brightness-105"
-        >
-          Abrir WhatsApp
-        </a>
+        {celular ? (
+          <a href={enlaces.universal} className={`mt-6 ${claseBotonVerde}`}>
+            Abrir WhatsApp
+          </a>
+        ) : (
+          <div className="mt-6 space-y-3">
+            <a href={enlaces.app} className={claseBotonVerde}>
+              Abrir la aplicación de WhatsApp
+            </a>
+            <a href={enlaces.web} target="_blank" rel="noopener noreferrer" className={claseBotonBorde}>
+              Usar WhatsApp Web
+            </a>
+            <p className="text-center text-sm text-apoyo-2">
+              WhatsApp Web pide escanear un código QR con tu celular si no has iniciado sesión.
+            </p>
+          </div>
+        )}
+
+        <div className="mt-4 rounded-2xl bg-white/60 p-4 text-sm">
+          <p>
+            ¿No se abrió? Escríbenos al <strong>+{whatsappNumero}</strong> y pega el pedido:
+          </p>
+          <button type="button" onClick={copiar} className={`mt-3 ${claseBotonBorde}`}>
+            {copiado === 'si' ? '¡Pedido copiado!' : 'Copiar pedido'}
+          </button>
+          {copiado === 'no' && (
+            <p className="mt-2 font-semibold text-error" role="alert">
+              No se pudo copiar. Selecciona el texto del pedido y cópialo manualmente.
+            </p>
+          )}
+          {copiado === 'no' && (
+            <pre className="mt-2 whitespace-pre-wrap rounded-xl bg-white p-3 font-texto text-xs">{mensaje}</pre>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={onNuevo}

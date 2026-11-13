@@ -94,6 +94,16 @@ WhatsApp.
   municipio, platos por salsa y total
 - **AND** se muestra un resumen con el aviso "Envía el mensaje para confirmar tu pedido"
 
+#### Scenario: Pedido desde celular
+- **WHEN** el cliente envía el pedido desde un celular
+- **THEN** se abre la app de WhatsApp de inmediato con `https://wa.me/...`
+
+#### Scenario: Pedido desde computador
+- **WHEN** el cliente envía el pedido desde un computador
+- **THEN** no se abre nada automáticamente
+- **AND** la confirmación ofrece "Abrir la aplicación de WhatsApp" (`whatsapp://send`),
+  "Usar WhatsApp Web" (`https://web.whatsapp.com/send`) y "Copiar pedido"
+
 #### Scenario: Paso al modo completo
 - **WHEN** se configura `VITE_APPS_SCRIPT_URL` y se vuelve a publicar
 - **THEN** la landing usa el backend para el estado y el registro, sin cambiar la interfaz
