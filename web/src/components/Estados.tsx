@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { formatoEntrega, formatoPesos } from '../lib/formato'
-import type { MotivoCierre, Resumen } from '../lib/tipos'
+import type { Resumen } from '../lib/tipos'
 import { copiarTexto, enlacesWhatsApp, esCelular, mensajePedido } from '../lib/whatsapp'
 
 const claseBotonVerde =
@@ -95,22 +95,22 @@ export function Confirmacion({
   )
 }
 
-const TEXTOS: Record<MotivoCierre, string> = {
-  CERRADO: 'Los pedidos están cerrados. Te esperamos en la próxima apertura.',
-  NO_INICIADO: 'Los pedidos aún no abren. Vuelve pronto.',
-  FECHA_VENCIDA: 'Los pedidos están cerrados. Te esperamos en la próxima apertura.',
-  CUPO_AGOTADO: 'Se agotaron los cupos de esta jornada. Te esperamos en la próxima apertura.',
-  SIN_CONFIGURAR: 'Los pedidos están cerrados por ahora. Te esperamos en la próxima apertura.',
-}
-
-export function Cerrado({ motivo }: { motivo: MotivoCierre }) {
+/** Aviso de pedidos cerrados: un único mensaje, sin importar el motivo del cierre. */
+export function Cerrado({ onVerMensaje }: { onVerMensaje: () => void }) {
   return (
     <section id="pedido" className="mx-auto max-w-5xl px-4 py-10">
       <div className="mx-auto max-w-xl rounded-3xl border-2 border-apoyo-2 p-6 text-center">
-        <h2 className="font-titulo text-4xl tracking-wide text-claro">
-          {motivo === 'CUPO_AGOTADO' ? 'Cupos agotados' : 'Pedidos cerrados'}
-        </h2>
-        <p className="mt-2 text-arena">{TEXTOS[motivo]}</p>
+        <h2 className="font-titulo text-4xl tracking-wide text-claro">Pedidos cerrados</h2>
+        <p className="mt-2 text-arena">
+          Esta jornada ya cruzó la meta. Te esperamos en la próxima apertura.
+        </p>
+        <button
+          type="button"
+          onClick={onVerMensaje}
+          className="mt-4 min-h-11 rounded-full bg-impacto px-6 font-semibold text-fondo transition hover:brightness-110"
+        >
+          Avísame en la próxima
+        </button>
       </div>
     </section>
   )

@@ -25,8 +25,12 @@ var HOJAS = {
   PEDIDOS: 'Pedidos',
   CONFIG: 'Config',
   SALSAS: 'Salsas',
-  MUNICIPIOS: 'Municipios'
+  MUNICIPIOS: 'Municipios',
+  INTERESADOS: 'Interesados'
 };
+
+// Encabezados de "Interesados": personas que llegaron tarde y piden aviso de la próxima jornada.
+var COLUMNAS_INTERESADOS = ['Fecha', 'Nombre', 'Teléfono', 'Acepta publicidad'];
 
 // Encabezados de "Pedidos". El script ubica las columnas por nombre, no por posición.
 var COL = {
@@ -89,6 +93,8 @@ var MENSAJES = {
   CERRADO: 'Los pedidos están cerrados. Te esperamos en la próxima apertura.',
   CUPO_AGOTADO: 'Se agotaron los cupos de esta jornada. Te esperamos en la próxima apertura.',
   DATOS_INVALIDOS: 'Revisa los datos del formulario.',
+  INTERESADO_OK: '¡Listo! Te avisaremos de la próxima jornada.',
+  SIN_AUTORIZACION: 'Marca la autorización para poder avisarte.',
   OCUPADO: 'Estamos recibiendo muchos pedidos. Intenta de nuevo en unos segundos.',
   ERROR: 'No pudimos registrar el pedido. Intenta de nuevo o escríbenos por WhatsApp.'
 };
@@ -120,13 +126,15 @@ function doPost(e) {
     return responder_({ ok: true, numero: 0 });
   }
 
+  var esInteresado = datos.accion === 'interesado';
+
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(15000)) {
     return responder_(error_('OCUPADO', MENSAJES.OCUPADO));
   }
 
   try {
-    return responder_(registrarPedido_(datos));
+    return responder_(esInteresado ? registrarInteresado_(datos) : registrarPedido_(datos));
   } catch (err) {
     console.error('doPost: ' + err);
     return responder_(error_('ERROR', MENSAJES.ERROR));
@@ -308,6 +316,49 @@ function valoresPedido_(v, numero, estadoPago) {
   valores[COL.FECHA] = new Date();
   valores[COL.ACEPTA_PUBLICIDAD] = v.aceptaPublicidad ? 'Sí' : 'No';
   return valores;
+}
+
+/**
+ * Guarda en "Interesados" a quien llegó con los pedidos cerrados y pide aviso de la
+ * próxima jornada. Exige la autorización (Ley 1581): es el único fin del dato.
+ */
+function registrarInteresado_(d) {
+  var errores = {};
+  var nombre = limpiarTexto_(d.nombre);
+  if (nombre.length < LIMITES.NOMBRE.min || nombre.length > LIMITES.NOMBRE.max) {
+    errores.nombre = 'Escribe tu nombre.';
+  }
+  var telefono = String(d.telefono == null ? '' : d.telefono).replace(/\D/g, '');
+  if (telefono.length === 12 && telefono.indexOf('57') === 0) telefono = telefono.slice(2);
+  if (!/^3\d{9}$/.test(telefono)) {
+    errores.telefono = 'El celular debe tener 10 dígitos y empezar por 3.';
+  }
+  if (d.acepta_publicidad !== true) {
+    errores.aceptaPublicidad = MENSAJES.SIN_AUTORIZACION;
+  }
+  if (Object.keys(errores).length) {
+    return { ok: false, codigo: 'DATOS_INVALIDOS', mensaje: MENSAJES.DATOS_INVALIDOS, errores: errores };
+  }
+
+  var hoja = obtenerHojaInteresados_(SpreadsheetApp.getActiveSpreadsheet());
+  var destino = hoja.getLastRow() + 1;
+  hoja.getRange(destino, 3).setNumberFormat('@');
+  hoja.getRange(destino, 1, 1, 4).setValues([[
+    new Date(), neutralizarFormula_(nombre), telefono, 'Sí'
+  ]]);
+  SpreadsheetApp.flush();
+  return { ok: true, mensaje: MENSAJES.INTERESADO_OK };
+}
+
+/** Pestaña "Interesados"; la crea con sus encabezados si aún no existe. */
+function obtenerHojaInteresados_(libro) {
+  var hoja = libro.getSheetByName(HOJAS.INTERESADOS);
+  if (!hoja) {
+    hoja = libro.insertSheet(HOJAS.INTERESADOS);
+    hoja.getRange(1, 1, 1, COLUMNAS_INTERESADOS.length).setValues([COLUMNAS_INTERESADOS]);
+    hoja.setFrozenRows(1);
+  }
+  return hoja;
 }
 
 function validarPedido_(d, ctx) {
@@ -619,7 +670,7 @@ function textoFecha_(fecha) {
 // ---------------------------------------------------------------------------
 
 /**
- * Crea las pestañas "Config", "Salsas" y "Municipios" si no existen y agrega al final
+ * Crea las pestañas "Config", "Salsas", "Municipios" e "Interesados" si no existen y agrega al final
  * de "Pedidos" los encabezados que falten. No borra ni sobrescribe datos existentes.
  */
 function configurarHoja() {
@@ -673,6 +724,8 @@ function configurarHoja() {
     mun.getRange(1, 1, 1, 2).setValues([['Nombre', 'Activo']]);
     mun.setFrozenRows(1);
   }
+
+  obtenerHojaInteresados_(libro);
 
   console.log('Hoja lista. Columnas agregadas a Pedidos: ' + (faltan.join(', ') || 'ninguna') +
     '. Claves agregadas a Config: ' + (nuevas.map(function (c) { return c[0]; }).join(', ') || 'ninguna'));

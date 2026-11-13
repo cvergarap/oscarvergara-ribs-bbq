@@ -56,8 +56,13 @@ assets/       Logo y recursos de marca
 - Google Apps Script como Web App, ejecutado como el dueño de la hoja.
   Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
 - La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
-- Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa) y
-  "Municipios" (Nombre, Activo). `configurarHoja()` las crea sin borrar datos.
+- Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa),
+  "Municipios" (Nombre, Activo) e "Interesados" (Fecha, Nombre, Teléfono, Acepta
+  publicidad). `configurarHoja()` las crea sin borrar datos.
+- Cierre (rama `propuesta-popup-cierre-fechas`, sin publicar): con los pedidos cerrados la
+  web muestra un popup "foto finish" con mensaje único; "Avísame en la próxima" cambia el
+  contenido por un formulario (nombre, celular, autorización obligatoria) que guarda en
+  "Interesados". Ver `openspec/changes/add-cierre-interesados/`.
 - Columnas de "Pedidos" (el script las ubica por nombre): N.º, Nombre completo,
   Teléfono de contacto, Dirección de entrega, Municipio, Cantidad de platos, Salsas,
   Estado del pago, ¿Envió pantallazo?, Fecha del pedido.

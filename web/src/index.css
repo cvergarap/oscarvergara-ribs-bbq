@@ -34,3 +34,21 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Ilustración "foto finish" del popup de cierre. */
+@keyframes ff-trote { from { transform: translateY(0) } to { transform: translateY(-3px) } }
+@keyframes ff-salta { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+@keyframes ff-gota { 0% { opacity: 0; transform: translateY(0) } 30% { opacity: 1 } 100% { opacity: 0; transform: translateY(8px) } }
+@keyframes ff-parpadeo { 50% { opacity: 0.2 } }
+@keyframes ff-destello { 0% { opacity: 0.9 } 100% { opacity: 0 } }
+
+.ff-corredor { animation: ff-trote 0.35s ease-in-out infinite alternate; }
+.ff-ganadora { animation: ff-salta 0.8s ease-in-out infinite; }
+.ff-sudor { animation: ff-gota 0.9s ease-in infinite; }
+.ff-sudor-2 { animation-delay: -0.45s; }
+.ff-rec { animation: ff-parpadeo 1s steps(1) infinite; }
+.ff-flash { animation: ff-destello 0.6s ease-out 0.2s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ff-corredor, .ff-ganadora, .ff-sudor, .ff-rec, .ff-flash { animation: none; }
+}
