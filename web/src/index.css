@@ -52,3 +52,34 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ff-corredor, .ff-ganadora, .ff-sudor, .ff-rec, .ff-flash { animation: none; }
 }
+
+/* Esqueletos de carga (Cargando.tsx): aparecen de arriba hacia abajo y un barrido de luz
+   baja por la tarjeta del formulario. Sin librerías. */
+@keyframes esq-entra { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: none } }
+@keyframes esq-pulso { 50% { opacity: 0.55 } }
+@keyframes esq-barrido { from { transform: translateY(-100%) } to { transform: translateY(250%) } }
+
+.esq {
+  background-color: color-mix(in srgb, var(--color-apoyo-2) 55%, transparent);
+  animation:
+    esq-entra 0.35s ease-out both,
+    esq-pulso 1.6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 70ms), calc(var(--i, 0) * 70ms + 0.35s);
+}
+.esq-claro { background-color: color-mix(in srgb, var(--color-apoyo-3) 70%, transparent); }
+.esq-campo { background-color: #fff; border: 2px solid var(--color-apoyo-3); }
+
+.esq-tarjeta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, rgb(255 255 255 / 0.45) 50%, transparent 100%);
+  height: 40%;
+  animation: esq-barrido 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esq, .esq-tarjeta::after { animation: none; }
+  .esq-tarjeta::after { display: none; }
+}

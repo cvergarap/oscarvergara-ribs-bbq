@@ -1,10 +1,12 @@
 import { jornada } from '../config/jornada'
 import { formatoEntrega, formatoFechaHora, formatoPesos } from '../lib/formato'
 import type { Estado } from '../lib/tipos'
+import { PortadaCargando } from './Cargando'
 import { Contador } from './Contador'
 
 type Props = {
-  estado: Estado
+  /** null mientras responde el Apps Script: se muestran esqueletos en su lugar. */
+  estado: Estado | null
   abierto: boolean
   onVencido: () => void
 }
@@ -28,40 +30,46 @@ export function Portada({ estado, abierto, onVencido }: Props) {
           Costillas BBQ
         </h1>
         <p className="mt-3 text-lg text-arena">{jornada.producto}.</p>
-        <p className="mt-4 font-titulo text-5xl tracking-wide text-impacto">
-          {formatoPesos(estado.precioPlato)}
-          <span className="ml-2 font-texto text-base font-medium text-apoyo-3">por plato</span>
-        </p>
+        {!estado ? (
+          <PortadaCargando />
+        ) : (
+          <>
+            <p className="mt-4 font-titulo text-5xl tracking-wide text-impacto">
+              {formatoPesos(estado.precioPlato)}
+              <span className="ml-2 font-texto text-base font-medium text-apoyo-3">por plato</span>
+            </p>
 
-        {estado.fechaEntrega && (
-          <p className="mt-2 text-arena">
-            Entrega: <strong className="text-claro">{formatoEntrega(estado.fechaEntrega, estado.horaEntrega)}</strong>
-          </p>
-        )}
-
-        <div className="mt-6">
-          {abierto && estado.fechaCierre ? (
-            <>
-              <Contador
-                fechaCierre={estado.fechaCierre}
-                desfaseReloj={estado.desfaseReloj}
-                onVencido={onVencido}
-              />
-              <p className="mt-2 text-sm text-apoyo-3">
-                Cierre: {formatoFechaHora(estado.fechaCierre)} (hora de Colombia)
+            {estado.fechaEntrega && (
+              <p className="mt-2 text-arena">
+                Entrega: <strong className="text-claro">{formatoEntrega(estado.fechaEntrega, estado.horaEntrega)}</strong>
               </p>
-            </>
-          ) : null}
+            )}
 
-        </div>
+            <div className="mt-6">
+              {abierto && estado.fechaCierre ? (
+                <>
+                  <Contador
+                    fechaCierre={estado.fechaCierre}
+                    desfaseReloj={estado.desfaseReloj}
+                    onVencido={onVencido}
+                  />
+                  <p className="mt-2 text-sm text-apoyo-3">
+                    Cierre: {formatoFechaHora(estado.fechaCierre)} (hora de Colombia)
+                  </p>
+                </>
+              ) : null}
 
-        {abierto && (
-          <a
-            href="#pedido"
-            className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-impacto px-6 text-lg font-bold text-fondo transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claro sm:w-auto sm:inline-flex"
-          >
-            Hacer mi pedido
-          </a>
+            </div>
+
+            {abierto && (
+              <a
+                href="#pedido"
+                className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-impacto px-6 text-lg font-bold text-fondo transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claro sm:w-auto sm:inline-flex"
+              >
+                Hacer mi pedido
+              </a>
+            )}
+          </>
         )}
       </div>
     </section>
