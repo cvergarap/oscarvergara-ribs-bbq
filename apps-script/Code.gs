@@ -365,13 +365,38 @@ function obtenerHojaPedidos_(libro) {
   return hoja;
 }
 
-/** { encabezado: índice base 0 }. Falla si falta alguna columna obligatoria. */
+/**
+ * Clave de comparación de un encabezado: sin tildes, mayúsculas, signos ni espacios
+ * repetidos. "N.º", "N°", "No.", "Nro" y "Número" equivalen a la columna N.º.
+ */
+function claveEncabezado_(h) {
+  var k = normalizar_(h).replace(/[¿?¡!.,:;º°ª#()]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (/^(n|no|nro|num|numero)( de pedido)?$/.test(k)) return 'n';
+  return k;
+}
+
+/**
+ * { encabezado oficial (COL): índice base 0 }. Tolera diferencias de escritura.
+ * Falla si falta alguna columna obligatoria, indicando qué encabezados encontró.
+ */
 function mapaColumnas_(hoja) {
-  var encabezados = hoja.getRange(1, 1, 1, hoja.getLastColumn()).getValues()[0];
+  var encabezados = hoja.getRange(1, 1, 1, Math.max(hoja.getLastColumn(), 1)).getValues()[0];
+  var porClave = {};
+  encabezados.forEach(function (h, i) {
+    var k = claveEncabezado_(h);
+    if (k && !(k in porClave)) porClave[k] = i; // si hay duplicados, gana el primero
+  });
   var mapa = {};
-  encabezados.forEach(function (h, i) { mapa[String(h).trim()] = i; });
-  var faltan = COLUMNAS_PEDIDOS.filter(function (c) { return !(c in mapa); });
-  if (faltan.length) throw new Error('Faltan columnas en "Pedidos": ' + faltan.join(', '));
+  var faltan = [];
+  COLUMNAS_PEDIDOS.forEach(function (c) {
+    var k = claveEncabezado_(c);
+    if (k in porClave) mapa[c] = porClave[k];
+    else faltan.push(c);
+  });
+  if (faltan.length) {
+    throw new Error('Faltan columnas en "Pedidos": ' + faltan.join(', ') +
+      '. Encabezados encontrados: ' + encabezados.map(String).join(' | '));
+  }
   return mapa;
 }
 
@@ -522,9 +547,10 @@ function configurarHoja() {
 
   var pedidos = libro.getSheetByName(HOJAS.PEDIDOS) || libro.insertSheet(HOJAS.PEDIDOS);
   var ancho = Math.max(pedidos.getLastColumn(), 1);
-  var actuales = pedidos.getRange(1, 1, 1, ancho).getValues()[0]
-    .map(function (h) { return String(h).trim(); });
-  var faltan = COLUMNAS_PEDIDOS.filter(function (c) { return actuales.indexOf(c) < 0; });
+  var actuales = pedidos.getRange(1, 1, 1, ancho).getValues()[0].map(claveEncabezado_);
+  var faltan = COLUMNAS_PEDIDOS.filter(function (c) {
+    return actuales.indexOf(claveEncabezado_(c)) < 0;
+  });
   if (faltan.length) {
     var inicio = pedidos.getLastColumn() === 0 ? 1 : pedidos.getLastColumn() + 1;
     pedidos.getRange(1, inicio, 1, faltan.length).setValues([faltan]);
