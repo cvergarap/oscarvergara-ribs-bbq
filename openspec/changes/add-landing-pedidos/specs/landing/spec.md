@@ -101,11 +101,9 @@ WhatsApp.
 #### Scenario: Pedido desde computador
 - **WHEN** el cliente envía el pedido desde un computador
 - **THEN** no se abre nada automáticamente
-- **AND** la confirmación ofrece, en este orden: "Abrir WhatsApp Web"
-  (`https://web.whatsapp.com/send`, principal), "Tengo WhatsApp instalado en este
-  computador" (`whatsapp://send`) y "Copiar pedido"
-- **AND** WhatsApp Web es la opción principal porque la app de escritorio depende de cómo
-  esté registrada en el sistema y la web no puede saber si se abrió
+- **AND** la confirmación ofrece "Abrir la aplicación de WhatsApp" (`whatsapp://send`)
+- **AND** debajo, el aviso "¿No se abrió? Escríbenos al +<número> y pega el pedido:" con
+  el botón "Copiar pedido" (decisión del dueño, 2026-11-13: sin botón de WhatsApp Web)
 
 #### Scenario: Paso al modo completo
 - **WHEN** se configura `VITE_APPS_SCRIPT_URL` y se vuelve a publicar
