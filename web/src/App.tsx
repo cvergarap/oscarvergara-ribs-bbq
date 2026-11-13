@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AvisoDatos } from './components/AvisoDatos'
+import { FormularioCargando } from './components/Cargando'
 import { Cabecera } from './components/Cabecera'
 import { Cerrado, Confirmacion, ErrorCarga } from './components/Estados'
 import { Formulario, type InfoAgotado } from './components/Formulario'
@@ -72,9 +73,10 @@ export default function App() {
     <>
       <Cabecera mostrarBoton={abierto && !resumen} />
       <main>
-        {estado && <Portada estado={estado} abierto={abierto} onVencido={alVencer} />}
+        {!falloCarga || estado ? <Portada estado={estado} abierto={abierto} onVencido={alVencer} /> : null}
         <GaleriaProducto />
 
+        {!estado && !falloCarga && <FormularioCargando />}
         {falloCarga && !estado && <ErrorCarga onReintentar={cargar} />}
         {estado && resumen && (
           <Confirmacion
