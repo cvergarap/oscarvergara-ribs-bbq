@@ -22,7 +22,7 @@ un formulario. Idioma del proyecto: español.
 web/          Frontend: React + Vite + TypeScript + Tailwind (se publica en Cloudflare Pages)
 apps-script/  Backend en Google Apps Script (Code.gs + appsscript.json)
 openspec/     Especificaciones, diseño y tareas
-docs/         Guías: configuracion-git, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
+docs/         Guías: configuracion-git, flujo-ramas, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
 scripts/      probar-webapp.sh (pruebas del Web App)
 assets/       Logo y recursos de marca
 ```
@@ -56,8 +56,13 @@ assets/       Logo y recursos de marca
 - Google Apps Script como Web App, ejecutado como el dueño de la hoja.
   Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
 - La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
-- Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa) y
-  "Municipios" (Nombre, Activo). `configurarHoja()` las crea sin borrar datos.
+- Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa),
+  "Municipios" (Nombre, Activo) e "Interesados" (Fecha, Nombre, Teléfono, Acepta
+  publicidad). `configurarHoja()` las crea sin borrar datos.
+- Cierre (rama `propuesta-popup-cierre-fechas`, sin publicar): con los pedidos cerrados la
+  web muestra un popup "foto finish" con mensaje único; "Avísame en la próxima" cambia el
+  contenido por un formulario (nombre, celular, autorización obligatoria) que guarda en
+  "Interesados". Ver `openspec/changes/add-cierre-interesados/`.
 - Columnas de "Pedidos" (el script las ubica por nombre): N.º, Nombre completo,
   Teléfono de contacto, Dirección de entrega, Municipio, Cantidad de platos, Salsas,
   Estado del pago, ¿Envió pantallazo?, Fecha del pedido.
@@ -123,6 +128,10 @@ formulario en el centro, testimonios y galería de clientes al final.
   cupo, fecha, formato, saneo contra inyección de fórmulas, honeypot y LockService.
   La validación del navegador es solo ayuda para el cliente.
 - Pedir confirmación antes de `git push` y antes de borrar archivos.
+- Ramas (desde 2026-11-13, ver `docs/flujo-ramas.md`): todo lo nuevo sale de `dev`
+  en una rama de trabajo y vuelve a `dev`; `qa` se prueba en local; `main` es producción
+  (Cloudflare). Nunca trabajar directo en `main`. Las pruebas en local no escriben en la
+  hoja de producción: usar `web/.env.local` con una hoja de pruebas o vacío.
 
 ## Siguiente paso
 1. Web publicada en https://oscarvergara-ribs-bbq.pages.dev (Cloudflare Pages, cuenta del

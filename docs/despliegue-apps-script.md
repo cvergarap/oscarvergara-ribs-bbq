@@ -15,7 +15,7 @@ Tiempo estimado: 20 minutos. Se hace con la cuenta de Google dueña de la hoja d
 2. Autorizar el acceso a la hoja con la cuenta del dueño. Google muestra
    "Google no verificó esta app": **Configuración avanzada → Ir a (proyecto)**. Es normal
    para scripts propios.
-3. Resultado: pestañas "Config", "Salsas" y "Municipios" creadas, y en "Pedidos" se
+3. Resultado: pestañas "Config", "Salsas", "Municipios" e "Interesados" creadas, y en "Pedidos" se
    agregan al final las columnas que falten ("Salsas" y "Fecha del pedido").
    No se borra ni se sobrescribe nada.
 
@@ -38,6 +38,10 @@ Pestaña **Config** (las fechas en texto, hora de Colombia):
 Pestaña **Salsas**: escribir la descripción de cada una. Pestaña **Municipios**: un
 municipio por fila con Activo = `SI`. Sin municipios o sin salsas activas, el script no
 acepta pedidos.
+
+Pestaña **Interesados** (Fecha, Nombre, Teléfono, Acepta publicidad): la llena la web
+cuando alguien llega con los pedidos cerrados y pide aviso de la próxima jornada. No se
+edita a mano y no afecta el cupo.
 
 Para revisar: elegir `probarEstado` → **Ejecutar** → ver el resultado en el registro.
 
