@@ -7,14 +7,14 @@
 - [x] 1.4 Configurar Git de forma local según docs/configuracion-git.md y verificar con `git config --local --list`
 
 ## 2. Google Sheets
-- [ ] 2.1 Ajustar encabezados de la pestaña "Pedidos" (10 columnas: se agregan "Salsas" y "Fecha del pedido")
+- [x] 2.1 Ajustar encabezados de la pestaña "Pedidos" (10 columnas: se agregan "Salsas" y "Fecha del pedido")
 - [ ] 2.2 Crear pestaña "Config" con: cupo_maximo, tipo_cupo, max_por_pedido, fecha_apertura, fecha_cierre, fecha_entrega, precio_plato, pedidos_abiertos, whatsapp_numero
 - [ ] 2.3 Confirmar que la hoja NO está compartida con "cualquier persona con el enlace"
 - [ ] 2.4 Crear pestaña "Salsas" (Nombre, Descripción, Activa) con Tradicional, Dulce y Picante
 - [ ] 2.5 Crear pestaña "Municipios" (Nombre, Activo) y cargar los municipios con cobertura
 
 ## 3. Apps Script (backend)
-- [ ] 3.1 Crear el script vinculado a la hoja
+- [x] 3.1 Crear el script vinculado a la hoja
 - [x] 3.2 Implementar doGet: devuelve cupos restantes, tipo de cupo, fechas, precio, salsas, municipios y WhatsApp
 - [x] 3.3 Implementar doPost: validar campos, salsas, municipio, cupo y fecha; asignar N.º; guardar fila
 - [x] 3.4 Agregar LockService, saneo contra fórmulas y honeypot
