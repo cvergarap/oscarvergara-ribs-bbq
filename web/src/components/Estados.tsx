@@ -62,15 +62,15 @@ export function Confirmacion({
           </a>
         ) : (
           <div className="mt-6 space-y-3">
-            <a href={enlaces.app} className={claseBotonVerde}>
-              Abrir la aplicación de WhatsApp
-            </a>
-            <a href={enlaces.web} target="_blank" rel="noopener noreferrer" className={claseBotonBorde}>
-              Usar WhatsApp Web
+            <a href={enlaces.web} target="_blank" rel="noopener noreferrer" className={claseBotonVerde}>
+              Abrir WhatsApp Web
             </a>
             <p className="text-center text-sm text-apoyo-2">
-              WhatsApp Web pide escanear un código QR con tu celular si no has iniciado sesión.
+              Si no has iniciado sesión, WhatsApp Web te pedirá escanear un código QR con tu celular.
             </p>
+            <a href={enlaces.app} className={claseBotonBorde}>
+              Tengo WhatsApp instalado en este computador
+            </a>
           </div>
         )}
 
