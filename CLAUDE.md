@@ -78,6 +78,8 @@ assets/       Logo y recursos de marca
 - Jornada confirmada por el dueño (en `web/src/config/jornada.ts`): cierre 13 de
   noviembre de 2026 a las 12:00 (Colombia), entrega 14 de noviembre a las 14:00.
 - Número de WhatsApp configurado en `web/.env`.
+- Municipios con cobertura: Pereira y Dosquebradas (desplegable, sin opción "Otro").
+- WhatsApp: en celular `wa.me`; en computador `whatsapp://send`, WhatsApp Web o copiar pedido.
 - Las descripciones de las salsas en `jornada.ts` son provisionales.
 
 ## Marca
@@ -96,14 +98,12 @@ Estructura de la landing: cabecera con logo, portada con contador, 4 fotos del p
 formulario en el centro, testimonios y galería de clientes al final.
 
 ## Pendientes (preguntar al dueño antes de asumir)
-1. Crear el proyecto en Cloudflare Pages (lo hace el dueño).
-2. Descripciones reales de las salsas.
-3. Municipios con cobertura (si no hay lista, el cliente escribe el municipio).
-4. Fotos reales del producto, sin texto encima.
-5. Dominio propio.
-6. ¿El repositorio pasa a privado? Si sí, ajustar la sección de seguridad del README.
-7. ¿Netlify como respaldo en caliente?
-8. Cuándo sale de pausa Google Sheets y Apps Script.
+1. Descripciones reales de las salsas.
+2. Fotos reales del producto, sin texto encima.
+3. Dominio propio.
+4. ¿El repositorio pasa a privado? Si sí, ajustar la sección de seguridad del README.
+5. ¿Netlify como respaldo en caliente?
+6. Cuándo sale de pausa Google Sheets y Apps Script.
 
 ## Reglas obligatorias
 - Git: configuración siempre local, nunca `--global`. Ver `docs/configuracion-git.md`.
@@ -117,7 +117,8 @@ formulario en el centro, testimonios y galería de clientes al final.
 - Pedir confirmación antes de `git push` y antes de borrar archivos.
 
 ## Siguiente paso
-1. Crear el proyecto en Cloudflare Pages (lo hace el dueño).
-2. Revisar la web publicada en celular y escritorio.
+1. Web publicada en https://oscarvergara-ribs-bbq.pages.dev (Cloudflare Pages, cuenta del
+   negocio). Cada push a `main` vuelve a publicar.
+2. Hacer un pedido real desde celular (tarea 6.2).
 3. Luego: tareas 1.3 (contenido), 5 (pruebas) y 6 (publicación) de
    `openspec/changes/add-landing-pedidos/tasks.md`.

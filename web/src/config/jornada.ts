@@ -23,7 +23,7 @@ export const jornada = {
     { nombre: 'Picante', descripcion: 'BBQ con chile, para los que les gusta el picor.' },
   ],
   /** Municipios con cobertura. Si está vacío, el cliente escribe el municipio. */
-  municipios: [] as string[],
+  municipios: ['Pereira', 'Dosquebradas'] as string[],
 }
 
 /** Variables públicas: se leen de web/.env o de las variables de Cloudflare Pages. */
