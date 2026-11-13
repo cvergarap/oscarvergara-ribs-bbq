@@ -33,6 +33,8 @@ export function Contador({ fechaCierre, desfaseReloj, onVencido }: Props) {
   }, [fechaCierre, desfaseReloj, onVencido])
 
   const { dias, horas, minutos, segundos } = partes(restante)
+  // Últimos 10 minutos: solo cambia el color, sin parpadeo ni sonido.
+  const ultimos = restante > 0 && restante <= 10 * 60 * 1000
   const bloques = [
     { valor: dias, etiqueta: 'días' },
     { valor: horas, etiqueta: 'horas' },
@@ -42,16 +44,20 @@ export function Contador({ fechaCierre, desfaseReloj, onVencido }: Props) {
 
   return (
     <div role="timer" aria-label="Tiempo restante para pedir">
-      <p className="mb-2 text-sm font-medium tracking-wide text-apoyo-3 uppercase">
-        Los pedidos cierran en
+      <p
+        className={`mb-2 text-sm font-medium tracking-wide uppercase transition-colors duration-700 ${ultimos ? 'text-impacto' : 'text-apoyo-3'}`}
+      >
+        {ultimos ? '¡Últimos minutos!' : 'Los pedidos cierran en'}
       </p>
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
         {bloques.map((b) => (
           <div
             key={b.etiqueta}
-            className="rounded-xl border border-apoyo-2 bg-apoyo-2/40 px-1 py-2 text-center"
+            className={`rounded-xl border bg-apoyo-2/40 px-1 py-2 text-center transition-colors duration-700 ${ultimos ? 'border-impacto/60' : 'border-apoyo-2'}`}
           >
-            <span className="block font-titulo text-4xl leading-none text-claro tabular-nums sm:text-5xl">
+            <span
+              className={`block font-titulo text-4xl leading-none tabular-nums transition-colors duration-700 sm:text-5xl ${ultimos ? 'text-impacto' : 'text-claro'}`}
+            >
               {String(b.valor).padStart(2, '0')}
             </span>
             <span className="mt-1 block text-xs text-apoyo-3">{b.etiqueta}</span>

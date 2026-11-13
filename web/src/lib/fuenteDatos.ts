@@ -185,3 +185,33 @@ async function pedidoRemoto(p: Pedido, estado: Estado): Promise<Resultado> {
     },
   }
 }
+
+// ---------------------------------------------------------------------------
+// Interesados: quien llega con los pedidos cerrados deja nombre y celular.
+// ---------------------------------------------------------------------------
+
+export type Interesado = { nombre: string; telefono: string; aceptaPublicidad: boolean; sitioWeb: string }
+
+export type ResultadoInteresado =
+  | { ok: true }
+  | { ok: false; mensaje: string; errores: Partial<Record<'nombre' | 'telefono' | 'aceptaPublicidad', string>> }
+
+/** Solo existe con backend (modo remoto): en modo WhatsApp no hay dónde guardar el dato. */
+export const PUEDE_REGISTRAR_INTERESADOS = MODO === 'remoto'
+
+export async function registrarInteresado(i: Interesado): Promise<ResultadoInteresado> {
+  const resp = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      accion: 'interesado',
+      nombre: i.nombre,
+      telefono: i.telefono,
+      acepta_publicidad: i.aceptaPublicidad,
+      sitio_web: i.sitioWeb,
+    }),
+  })
+  const d = await resp.json()
+  if (d.ok) return { ok: true }
+  return { ok: false, mensaje: d.mensaje ?? 'No pudimos guardar tus datos.', errores: d.errores ?? {} }
+}
