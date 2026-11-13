@@ -5,8 +5,10 @@ Resumen de lo acordado. Léelo antes de cualquier tarea. Última actualización:
 ## Qué es
 Landing de pedidos para RIBS BBQ (costillas barbecue). El cliente ve el producto y llena
 un formulario. Idioma del proyecto: español.
-- **Hoy (MVP, modo WhatsApp):** el formulario arma el pedido y lo abre en WhatsApp.
-- **Después (modo completo):** el pedido queda registrado en Google Sheets vía Apps Script.
+- **Hoy (modo completo, desde 2026-11-13):** el pedido queda registrado en Google Sheets
+  vía Apps Script y luego abre WhatsApp con el número de pedido.
+- **Respaldo (modo WhatsApp):** si el backend falla, se vacía `VITE_APPS_SCRIPT_URL` en
+  `web/.env` y se hace push; el formulario vuelve a enviar el pedido solo por WhatsApp.
 
 ## Fuente de verdad
 - `openspec/changes/add-landing-pedidos/`: landing y pedidos (`proposal.md`, `design.md`,
@@ -18,7 +20,7 @@ un formulario. Idioma del proyecto: español.
 ## Estructura del repositorio
 ```
 web/          Frontend: React + Vite + TypeScript + Tailwind (se publica en Cloudflare Pages)
-apps-script/  Backend en Google Apps Script (Code.gs + appsscript.json), en pausa
+apps-script/  Backend en Google Apps Script (Code.gs + appsscript.json)
 openspec/     Especificaciones, diseño y tareas
 docs/         Guías: configuracion-git, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
 scripts/      probar-webapp.sh (pruebas del Web App)
@@ -31,11 +33,11 @@ assets/       Logo y recursos de marca
 - React + Vite + TypeScript + Tailwind en `web/`, mobile-first (base 360 px).
 - Lovable en pausa (no se pudo activar la cuenta). Si se retoma: `docs/lovable-prompt.md`.
 - Fuente de datos intercambiable (`web/src/lib/fuenteDatos.ts`):
-  - **Modo WhatsApp** (activo): la jornada sale de `web/src/config/jornada.ts`
+  - **Modo WhatsApp** (respaldo): la jornada sale de `web/src/config/jornada.ts`
     (fechas, precio, máximo por pedido, salsas con descripción, municipios, abierto/cerrado).
     Sin cupos restantes ni número de pedido. Los datos del cliente solo van a WhatsApp.
-  - **Modo completo**: se activa con `VITE_APPS_SCRIPT_URL`, sin cambiar la interfaz.
-    Escrito pero no probado contra un backend real.
+  - **Modo completo** (activo): se activa con `VITE_APPS_SCRIPT_URL`. Fechas, cupo, salsas,
+    municipios y WhatsApp salen de la hoja; `jornada.ts` no se usa. Probado el 2026-11-13.
 - Variables públicas en `web/.env` (sí se sube; nunca secretos). Las variables de
   Cloudflare Pages tienen prioridad. `.env.local` queda fuera de Git.
   - `VITE_WHATSAPP_NUMERO` (formato `57XXXXXXXXXX`). Sin él, la web muestra "Pedidos cerrados".
@@ -50,7 +52,7 @@ assets/       Logo y recursos de marca
   dominio propio con DNS en Cloudflare (dominio pendiente de compra).
 - Vercel solo con plan Pro: Hobby no admite uso comercial.
 
-### Backend (en pausa)
+### Backend (activo)
 - Google Apps Script como Web App, ejecutado como el dueño de la hoja.
   Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
 - La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
@@ -103,7 +105,7 @@ formulario en el centro, testimonios y galería de clientes al final.
 3. Dominio propio.
 4. ¿El repositorio pasa a privado? Si sí, ajustar la sección de seguridad del README.
 5. ¿Netlify como respaldo en caliente?
-6. Cuándo sale de pausa Google Sheets y Apps Script.
+6. Probar cupo lleno y fecha vencida en el backend (tarea 3.6).
 
 ## Reglas obligatorias
 - Git: configuración siempre local, nunca `--global`. Ver `docs/configuracion-git.md`.

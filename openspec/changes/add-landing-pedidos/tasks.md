@@ -8,18 +8,18 @@
 
 ## 2. Google Sheets
 - [x] 2.1 Ajustar encabezados de la pestaña "Pedidos" (10 columnas: se agregan "Salsas" y "Fecha del pedido")
-- [ ] 2.2 Crear pestaña "Config" con: cupo_maximo, tipo_cupo, max_por_pedido, fecha_apertura, fecha_cierre, fecha_entrega, precio_plato, pedidos_abiertos, whatsapp_numero
+- [x] 2.2 Crear pestaña "Config" con: cupo_maximo, tipo_cupo, max_por_pedido, fecha_apertura, fecha_cierre, fecha_entrega, precio_plato, pedidos_abiertos, whatsapp_numero
 - [ ] 2.3 Confirmar que la hoja NO está compartida con "cualquier persona con el enlace"
-- [ ] 2.4 Crear pestaña "Salsas" (Nombre, Descripción, Activa) con Tradicional, Dulce y Picante
-- [ ] 2.5 Crear pestaña "Municipios" (Nombre, Activo) y cargar los municipios con cobertura
+- [x] 2.4 Crear pestaña "Salsas" (Nombre, Descripción, Activa) con Tradicional, Dulce y Picante
+- [x] 2.5 Crear pestaña "Municipios" (Nombre, Activo) y cargar los municipios con cobertura (Pereira, Dosquebradas)
 
 ## 3. Apps Script (backend)
 - [x] 3.1 Crear el script vinculado a la hoja
 - [x] 3.2 Implementar doGet: devuelve cupos restantes, tipo de cupo, fechas, precio, salsas, municipios y WhatsApp
 - [x] 3.3 Implementar doPost: validar campos, salsas, municipio, cupo y fecha; asignar N.º; guardar fila
 - [x] 3.4 Agregar LockService, saneo contra fórmulas y honeypot
-- [ ] 3.5 Desplegar como Web App y guardar la URL
-- [ ] 3.6 Probar con pedidos de prueba: válido, cupo lleno, fecha vencida, datos inválidos
+- [x] 3.5 Desplegar como Web App y guardar la URL (2026-11-13)
+- [ ] 3.6 Probar con pedidos de prueba: válido ✓, datos inválidos ✓, honeypot ✓, fórmula ✓; faltan cupo lleno y fecha vencida
 
 ## 4. Landing (construida en `web/`; Lovable en pausa)
 - [x] 4.1 Generar la estructura en modo mobile-first (base 360 px): cabecera con logo, portada, 4 fotos, formulario, testimonios, galería, pie
@@ -34,7 +34,7 @@
 ## 5. Pruebas y seguridad
 - [ ] 5.1 Probar en celular (Android y iPhone) y en computador
 - [ ] 5.2 Enviar dos pedidos al tiempo con un cupo restante: solo debe entrar uno
-- [ ] 5.3 Intentar texto que empiece por "=" y verificar que no se ejecuta como fórmula
+- [x] 5.3 Intentar texto que empiece por "=" y verificar que no se ejecuta como fórmula
 - [ ] 5.4 Revisar contraste y lectura con la paleta oficial
 
 ## 6. Publicación
