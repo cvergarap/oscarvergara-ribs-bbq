@@ -34,10 +34,16 @@ Pestaña **Config** (las fechas en texto, hora de Colombia):
 | precio_plato | 30000 | |
 | pedidos_abiertos | SI | `NO` cierra todo al instante |
 | whatsapp_numero | 57XXXXXXXXXX | Sin `+`, sin espacios |
+| mensaje_en_camino | ¡Hola {nombre}! … tu pedido #{numero} ({platos}) ya va en camino… | Texto del WhatsApp de salida. `{nombre}` = primer nombre, `{numero}` = N.º, `{platos}` = "2 platos" |
 
 Pestaña **Salsas**: escribir la descripción de cada una. Pestaña **Municipios**: un
 municipio por fila con Activo = `SI`. Sin municipios o sin salsas activas, el script no
 acepta pedidos.
+
+Columna **Mensaje de salida** (en "Pedidos"): enlace "📲 Va en camino" por pedido. Al
+tocarlo abre WhatsApp con el cliente y el mensaje de `mensaje_en_camino` ya escrito. El
+script lo pone en cada pedido nuevo; para los pedidos que ya existían, ejecutar
+`configurarHoja` una vez. No sale en los sobrepedidos.
 
 Pestaña **Interesados** (Fecha, Nombre, Teléfono, Acepta publicidad): la llena la web
 cuando alguien llega con los pedidos cerrados y pide aviso de la próxima jornada. No se

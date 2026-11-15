@@ -44,7 +44,8 @@ var COL = {
   ESTADO_PAGO: 'Estado del pago',
   PANTALLAZO: '¿Envió pantallazo?',
   FECHA: 'Fecha del pedido',
-  ACEPTA_PUBLICIDAD: '¿Acepta publicidad?'
+  ACEPTA_PUBLICIDAD: '¿Acepta publicidad?',
+  MENSAJE_SALIDA: 'Mensaje de salida'
 };
 
 var COLUMNAS_PEDIDOS = [
@@ -53,7 +54,12 @@ var COLUMNAS_PEDIDOS = [
 ];
 
 // Columnas que se usan si existen, sin romper hojas que aún no las tienen.
-var COLUMNAS_OPCIONALES = [COL.ACEPTA_PUBLICIDAD];
+var COLUMNAS_OPCIONALES = [COL.ACEPTA_PUBLICIDAD, COL.MENSAJE_SALIDA];
+
+// Texto por defecto del WhatsApp de salida. Se cambia en Config (mensaje_en_camino) con
+// {nombre} (primer nombre), {numero} (N.º del pedido) y {platos} ("2 platos").
+var MENSAJE_EN_CAMINO = '¡Hola {nombre}! 🔥 Gracias por tu compra en RIBS BBQ. ' +
+  'Tu pedido #{numero} ({platos}) ya va en camino. ¡Buen provecho!';
 
 // "Estado del pago" de un pedido que llegó con el cupo agotado. No cuenta para el cupo.
 var ESTADO_SOBREPEDIDO = 'Cancelado por Sobrepedidos';
@@ -63,7 +69,8 @@ var CLAVES_CONFIG = [
   ['cupo_maximo', 20], ['tipo_cupo', 'platos'], ['max_por_pedido', 5],
   ['fecha_apertura', ''], ['fecha_cierre', ''], ['fecha_entrega', ''], ['hora_entrega', ''],
   ['precio_plato', 30000], ['pedidos_abiertos', 'NO'], ['whatsapp_numero', ''],
-  ['instagram_url', ''], ['facebook_url', ''], ['tiktok_url', '']
+  ['instagram_url', ''], ['facebook_url', ''], ['tiktok_url', ''],
+  ['mensaje_en_camino', MENSAJE_EN_CAMINO]
 ];
 
 // Valores por defecto si una clave de "Config" falta o está vacía.
@@ -315,6 +322,8 @@ function valoresPedido_(v, numero, estadoPago) {
   valores[COL.PANTALLAZO] = 'No';
   valores[COL.FECHA] = new Date();
   valores[COL.ACEPTA_PUBLICIDAD] = v.aceptaPublicidad ? 'Sí' : 'No';
+  // Enlace de WhatsApp "va en camino": la fórmula se arma en escribirFila_ con la fila final.
+  if (estadoPago !== ESTADO_SOBREPEDIDO) valores[COL.MENSAJE_SALIDA] = true;
   return valores;
 }
 
@@ -455,10 +464,69 @@ function escribirFila_(hoja, valores) {
   });
 
   var destino = hoja.getLastRow() + 1;
+  if (valores[COL.MENSAJE_SALIDA] === true && COL.MENSAJE_SALIDA in mapa) {
+    fila[mapa[COL.MENSAJE_SALIDA]] = formulaMensajeSalida_(mapa, destino);
+  }
   // El teléfono se guarda como texto para que Sheets no lo convierta en número.
   hoja.getRange(destino, mapa[COL.TELEFONO] + 1).setNumberFormat('@');
   hoja.getRange(destino, 1, 1, ancho).setValues([fila]);
   SpreadsheetApp.flush();
+}
+
+/** Letra de columna (A, B, …, AA) para un índice desde 0. */
+function letraColumna_(indice) {
+  var letra = '';
+  var n = indice + 1;
+  while (n > 0) {
+    var r = (n - 1) % 26;
+    letra = String.fromCharCode(65 + r) + letra;
+    n = Math.floor((n - 1) / 26);
+  }
+  return letra;
+}
+
+/**
+ * Fórmula del enlace "va en camino" para una fila. Lee nombre, teléfono, N.º y cantidad
+ * de la misma fila, y el texto de Config (mensaje_en_camino). No copia datos del cliente
+ * en la fórmula: solo referencias a celdas, así no hay riesgo de inyección.
+ * Vacía si la fila no tiene teléfono o es un sobrepedido.
+ */
+function formulaMensajeSalida_(mapa, fila) {
+  var c = function (col) { return letraColumna_(mapa[col]) + fila; };
+  var nombre = c(COL.NOMBRE);
+  var tel = c(COL.TELEFONO);
+  var cant = c(COL.CANTIDAD);
+  var plantilla = 'IFERROR(VLOOKUP("mensaje_en_camino",' + HOJAS.CONFIG + '!$A:$B,2,FALSE),"")';
+  var texto = 'IF(' + plantilla + '="","' + MENSAJE_EN_CAMINO + '",' + plantilla + ')';
+  texto = 'SUBSTITUTE(' + texto + ',"{nombre}",PROPER(LEFT(' + nombre + ',FIND(" ",' + nombre + '&" ")-1)))';
+  texto = 'SUBSTITUTE(' + texto + ',"{numero}",' + c(COL.NUMERO) + ')';
+  texto = 'SUBSTITUTE(' + texto + ',"{platos}",' + cant + '&IF(' + cant + '=1," plato"," platos"))';
+  return '=IF(OR(TRIM(' + tel + ')="",' + c(COL.ESTADO_PAGO) + '="' + ESTADO_SOBREPEDIDO + '"),"",' +
+    'HYPERLINK("https://wa.me/57"&REGEXREPLACE(' + tel + '&"","\\D","")&"?text="&ENCODEURL(' +
+    texto + '),"📲 Va en camino"))';
+}
+
+/**
+ * Pone la fórmula de "Mensaje de salida" en los pedidos que ya existen y aún no la tienen
+ * (filas con N.º). No toca las celdas que ya tienen contenido. Devuelve cuántas llenó.
+ */
+function llenarMensajesSalida_(hoja) {
+  var mapa = mapaColumnas_(hoja);
+  if (!(COL.MENSAJE_SALIDA in mapa) || hoja.getLastRow() < 2) return 0;
+  var filas = hoja.getLastRow() - 1;
+  var numeros = hoja.getRange(2, mapa[COL.NUMERO] + 1, filas, 1).getValues();
+  var rango = hoja.getRange(2, mapa[COL.MENSAJE_SALIDA] + 1, filas, 1);
+  var formulas = rango.getFormulas();
+  var valores = rango.getValues();
+  var llenas = 0;
+  var nuevas = formulas.map(function (f, i) {
+    if (f[0]) return [f[0]];
+    if (valores[i][0] !== '' || numeros[i][0] === '') return [valores[i][0]];
+    llenas++;
+    return [formulaMensajeSalida_(mapa, i + 2)];
+  });
+  if (llenas) rango.setValues(nuevas);
+  return llenas;
 }
 
 // ---------------------------------------------------------------------------
@@ -726,7 +794,9 @@ function configurarHoja() {
   }
 
   obtenerHojaInteresados_(libro);
+  var enlaces = llenarMensajesSalida_(pedidos);
 
+  console.log('Enlaces de WhatsApp agregados en "Mensaje de salida": ' + enlaces + '.');
   console.log('Hoja lista. Columnas agregadas a Pedidos: ' + (faltan.join(', ') || 'ninguna') +
     '. Claves agregadas a Config: ' + (nuevas.map(function (c) { return c[0]; }).join(', ') || 'ninguna'));
 }
