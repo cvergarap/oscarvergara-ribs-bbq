@@ -17,6 +17,10 @@ listo ahorra tiempo cuando salen los domicilios.
 - No aparece en los sobrepedidos ni en filas sin teléfono.
 
 ## Diseño
+- El enlace lo arma la función personalizada `ENLACE_EN_CAMINO` del script, con
+  `encodeURIComponent`. La primera versión usaba `ENCODEURL` de Sheets, que dañaba los emojis
+  (WhatsApp mostraba "�"; visto el 2026-11-15 en el pedido #1). `configurarHoja` reemplaza
+  esas fórmulas viejas.
 - La fórmula solo referencia celdas de la misma fila (nombre, teléfono, N.º, cantidad) y
   la clave de Config. No copia datos del cliente dentro de la fórmula: no hay riesgo de
   inyección.

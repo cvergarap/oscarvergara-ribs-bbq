@@ -43,7 +43,9 @@ acepta pedidos.
 Columna **Mensaje de salida** (en "Pedidos"): enlace "📲 Va en camino" por pedido. Al
 tocarlo abre WhatsApp con el cliente y el mensaje de `mensaje_en_camino` ya escrito. El
 script lo pone en cada pedido nuevo; para los pedidos que ya existían, ejecutar
-`configurarHoja` una vez. No sale en los sobrepedidos.
+`configurarHoja` una vez (también actualiza las fórmulas de la versión 1.3.0, que dañaban
+los emojis). No sale en los sobrepedidos. El enlace lo arma la función `ENLACE_EN_CAMINO`
+del script; los emojis del texto de Config se ven bien en WhatsApp.
 
 Pestaña **Interesados** (Fecha, Nombre, Teléfono, Acepta publicidad): la llena la web
 cuando alguien llega con los pedidos cerrados y pide aviso de la próxima jornada. No se

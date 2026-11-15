@@ -3,10 +3,11 @@
  *
  * Copyright (c) 2026 Oscar Vergara. Todos los derechos reservados. Ver LICENSE.
  *
- * Versión: 1.3.0 (2026-11-15). Al publicar, escribir la misma versión en la descripción
+ * Versión: 1.3.1 (2026-11-15). Al publicar, escribir la misma versión en la descripción
  * de "Nueva versión" y subir VERSION abajo. La web la puede ver en el GET (campo version).
  *
  * Historial:
+ *   1.3.1  2026-11-15  Emojis del mensaje de salida: el enlace se arma con ENLACE_EN_CAMINO.
  *   1.3.0  2026-11-15  Enlace de WhatsApp "va en camino" (columna Mensaje de salida).
  *   1.2.0  2026-11-13  Registro de interesados (pestaña Interesados) desde el popup de cierre.
  *   1.1.0  2026-11-13  Sobrepedidos registrados, autorización de publicidad y redes sociales.
@@ -30,7 +31,7 @@
 // ---------------------------------------------------------------------------
 
 // Versión del script (ver historial arriba). Se devuelve en el GET para saber qué hay publicado.
-var VERSION = '1.3.0';
+var VERSION = '1.3.1';
 
 var ZONA_HORARIA = 'America/Bogota';
 
@@ -500,29 +501,60 @@ function letraColumna_(indice) {
 }
 
 /**
- * Fórmula del enlace "va en camino" para una fila. Lee nombre, teléfono, N.º y cantidad
- * de la misma fila, y el texto de Config (mensaje_en_camino). No copia datos del cliente
- * en la fórmula: solo referencias a celdas, así no hay riesgo de inyección.
+ * Enlace de WhatsApp "va en camino" (función personalizada de la hoja).
+ * Se usa así: =HYPERLINK(ENLACE_EN_CAMINO(nombre; teléfono; N.º; platos; plantilla); "…").
+ * Arma la URL con encodeURIComponent, que codifica bien los emojis (ENCODEURL de Sheets
+ * los dañaba y WhatsApp mostraba "�"). Recibe la plantilla como argumento para que la
+ * hoja recalcule cuando se cambia mensaje_en_camino en Config.
+ *
+ * @param {string} nombre Nombre completo del cliente.
+ * @param {string} telefono Celular (10 dígitos).
+ * @param {number} numero N.º del pedido.
+ * @param {number} platos Cantidad de platos.
+ * @param {string} plantilla Texto de Config (mensaje_en_camino); vacío = texto por defecto.
+ * @return {string} URL https://wa.me/57… o vacío si no hay teléfono válido.
+ * @customfunction
+ */
+function ENLACE_EN_CAMINO(nombre, telefono, numero, platos, plantilla) {
+  return enlaceEnCamino_(nombre, telefono, numero, platos, plantilla);
+}
+
+function enlaceEnCamino_(nombre, telefono, numero, platos, plantilla) {
+  var tel = String(telefono == null ? '' : telefono).replace(/\D/g, '');
+  if (tel.length === 12 && tel.indexOf('57') === 0) tel = tel.slice(2);
+  if (!/^3\d{9}$/.test(tel)) return '';
+  var primero = String(nombre == null ? '' : nombre).replace(/^'/, '').trim().split(/\s+/)[0] || '';
+  primero = primero.charAt(0).toUpperCase() + primero.slice(1).toLowerCase();
+  var n = parseInt(platos, 10) || 0;
+  var texto = String(plantilla == null || String(plantilla).trim() === '' ? MENSAJE_EN_CAMINO : plantilla)
+    .split('{nombre}').join(primero)
+    .split('{numero}').join(String(numero == null ? '' : numero))
+    .split('{platos}').join(n + (n === 1 ? ' plato' : ' platos'));
+  return 'https://wa.me/57' + tel + '?text=' + encodeURIComponent(texto);
+}
+
+/**
+ * Fórmula de "Mensaje de salida" para una fila. Solo referencias a celdas de la misma fila
+ * y a Config: no copia datos del cliente en la fórmula (sin riesgo de inyección).
  * Vacía si la fila no tiene teléfono o es un sobrepedido.
  */
 function formulaMensajeSalida_(mapa, fila) {
   var c = function (col) { return letraColumna_(mapa[col]) + fila; };
-  var nombre = c(COL.NOMBRE);
-  var tel = c(COL.TELEFONO);
-  var cant = c(COL.CANTIDAD);
   var plantilla = 'IFERROR(VLOOKUP("mensaje_en_camino",' + HOJAS.CONFIG + '!$A:$B,2,FALSE),"")';
-  var texto = 'IF(' + plantilla + '="","' + MENSAJE_EN_CAMINO + '",' + plantilla + ')';
-  texto = 'SUBSTITUTE(' + texto + ',"{nombre}",PROPER(LEFT(' + nombre + ',FIND(" ",' + nombre + '&" ")-1)))';
-  texto = 'SUBSTITUTE(' + texto + ',"{numero}",' + c(COL.NUMERO) + ')';
-  texto = 'SUBSTITUTE(' + texto + ',"{platos}",' + cant + '&IF(' + cant + '=1," plato"," platos"))';
-  return '=IF(OR(TRIM(' + tel + ')="",' + c(COL.ESTADO_PAGO) + '="' + ESTADO_SOBREPEDIDO + '"),"",' +
-    'HYPERLINK("https://wa.me/57"&REGEXREPLACE(' + tel + '&"","\\D","")&"?text="&ENCODEURL(' +
-    texto + '),"📲 Va en camino"))';
+  return '=IF(OR(TRIM(' + c(COL.TELEFONO) + ')="",' + c(COL.ESTADO_PAGO) + '="' + ESTADO_SOBREPEDIDO +
+    '"),"",HYPERLINK(ENLACE_EN_CAMINO(' + [c(COL.NOMBRE), c(COL.TELEFONO), c(COL.NUMERO),
+    c(COL.CANTIDAD), plantilla].join(',') + '),"📲 Va en camino"))';
+}
+
+/** true si la celda tiene una fórmula de "Mensaje de salida" hecha por este script. */
+function esFormulaMensajeSalida_(f) {
+  return /ENLACE_EN_CAMINO\(|wa\.me\/57/.test(String(f || ''));
 }
 
 /**
- * Pone la fórmula de "Mensaje de salida" en los pedidos que ya existen y aún no la tienen
- * (filas con N.º). No toca las celdas que ya tienen contenido. Devuelve cuántas llenó.
+ * Pone la fórmula de "Mensaje de salida" en los pedidos con N.º que no la tienen y
+ * actualiza las fórmulas anteriores de este script (las de ENCODEURL que dañaban los
+ * emojis). No toca celdas con otro contenido. Devuelve cuántas llenó o actualizó.
  */
 function llenarMensajesSalida_(hoja) {
   var mapa = mapaColumnas_(hoja);
@@ -532,15 +564,20 @@ function llenarMensajesSalida_(hoja) {
   var rango = hoja.getRange(2, mapa[COL.MENSAJE_SALIDA] + 1, filas, 1);
   var formulas = rango.getFormulas();
   var valores = rango.getValues();
-  var llenas = 0;
+  var cambios = 0;
   var nuevas = formulas.map(function (f, i) {
-    if (f[0]) return [f[0]];
+    var nueva = formulaMensajeSalida_(mapa, i + 2);
+    if (f[0]) {
+      if (!esFormulaMensajeSalida_(f[0]) || f[0] === nueva) return [f[0]];
+      cambios++;
+      return [nueva];
+    }
     if (valores[i][0] !== '' || numeros[i][0] === '') return [valores[i][0]];
-    llenas++;
-    return [formulaMensajeSalida_(mapa, i + 2)];
+    cambios++;
+    return [nueva];
   });
-  if (llenas) rango.setValues(nuevas);
-  return llenas;
+  if (cambios) rango.setValues(nuevas);
+  return cambios;
 }
 
 // ---------------------------------------------------------------------------
@@ -810,7 +847,7 @@ function configurarHoja() {
   obtenerHojaInteresados_(libro);
   var enlaces = llenarMensajesSalida_(pedidos);
 
-  console.log('Enlaces de WhatsApp agregados en "Mensaje de salida": ' + enlaces + '.');
+  console.log('Enlaces de WhatsApp agregados o actualizados en "Mensaje de salida": ' + enlaces + '.');
   console.log('Hoja lista. Columnas agregadas a Pedidos: ' + (faltan.join(', ') || 'ninguna') +
     '. Claves agregadas a Config: ' + (nuevas.map(function (c) { return c[0]; }).join(', ') || 'ninguna'));
 }
