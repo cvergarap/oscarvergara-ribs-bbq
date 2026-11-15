@@ -14,6 +14,8 @@ traspaso-ribs-bbq.zip
 .clasprc.json
 # Excepción: variables PÚBLICAS de la web (sin secretos). Ver web/.env
 !web/.env
+!web/.env.development
+!web/.env.simulado
 
 # Configuración local de Claude Code
 .claude/launch.json

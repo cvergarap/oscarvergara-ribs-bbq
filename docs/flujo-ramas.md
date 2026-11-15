@@ -41,13 +41,10 @@ npm run dev
 ```
 Abrir http://localhost:5173 y probar en celular (vista móvil) y computador.
 
-**Las pruebas de qa no deben escribir en la hoja de producción.** Antes de probar,
-crear `web/.env.local` (no se sube) con una de estas opciones:
-- **Hoja de pruebas** (recomendado): una copia de la hoja de Google con su propio Web App.
-  `VITE_APPS_SCRIPT_URL=<URL /exec de la copia>`
-- **Sin backend** (solo pantallas): `VITE_APPS_SCRIPT_URL=` (vacío, modo WhatsApp).
+**Las pruebas en local no escriben en la hoja de producción:** `npm run dev` usa la hoja
+DEV (`web/.env.development`) y `npm run dev:simulado` el simulador. Ver
+[ambientes.md](ambientes.md).
 
-Al terminar, dejar `web/.env.local` vacío para no confundir pruebas futuras.
 ```bash
 git push origin qa
 ```
