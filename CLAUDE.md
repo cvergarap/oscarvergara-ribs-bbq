@@ -54,6 +54,11 @@ assets/       Logo y recursos de marca
 
 ### Backend (activo)
 - Google Apps Script como Web App, ejecutado como el dueño de la hoja.
+  Versionado: cada cambio de `Code.gs` sube `VERSION` y el historial del encabezado
+  (semver: x.y.z). Al publicar, la misma versión va en la descripción de "Nueva versión".
+  El GET devuelve `version` para saber qué hay publicado.
+  Publicar: `docs/despliegue-apps-script.md` sección 5. Siempre "Nueva versión" en la
+  implementación existente; nunca "Nueva implementación" (cambia la URL y rompe la web).
   Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
 - La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
 - Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa),
@@ -67,14 +72,16 @@ assets/       Logo y recursos de marca
   Teléfono de contacto, Dirección de entrega, Municipio, Cantidad de platos, Salsas,
   Estado del pago, ¿Envió pantallazo?, Fecha del pedido.
   "Estado del pago" nace en "Pendiente" y "¿Envió pantallazo?" en "No".
-  Columna opcional: ¿Acepta publicidad? (Sí/No), autorización de la Ley 1581.
+  Columnas opcionales: ¿Acepta publicidad? (Sí/No), autorización de la Ley 1581; y
+  Mensaje de salida (fórmula con enlace de WhatsApp "va en camino", texto en Config
+  `mensaje_en_camino`). Ver `openspec/changes/add-enlace-whatsapp-salida/`.
 - Sobrepedidos: con el cupo agotado el formulario sigue abierto; el pedido se registra sin
   N.º con "Estado del pago" = "Cancelado por Sobrepedidos", no cuenta para el cupo, y la web
   muestra un popup de cupos agotados con redes sociales (no abre WhatsApp). La web no
   muestra los cupos restantes. Ver `openspec/changes/add-lista-espera-sobrepedidos/`.
 - Claves de "Config": cupo_maximo (20), tipo_cupo (`platos`/`pedidos`), max_por_pedido,
   fecha_apertura, fecha_cierre, fecha_entrega, hora_entrega, precio_plato, pedidos_abiertos,
-  whatsapp_numero, instagram_url, facebook_url, tiktok_url (solo https).
+  whatsapp_numero, instagram_url, facebook_url, tiktok_url (solo https), mensaje_en_camino.
   El cupo cuenta solo pedidos desde `fecha_apertura`.
 
 ### Negocio
