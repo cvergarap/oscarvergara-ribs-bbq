@@ -21,6 +21,8 @@ listo ahorra tiempo cuando salen los domicilios.
   `encodeURIComponent`. La primera versión usaba `ENCODEURL` de Sheets, que dañaba los emojis
   (WhatsApp mostraba "�"; visto el 2026-11-15 en el pedido #1). `configurarHoja` reemplaza
   esas fórmulas viejas.
+- El enlace va a `api.whatsapp.com/send` y no a `wa.me`: `wa.me` redirige y cambia todos los
+  emojis por "�" (comprobado el 2026-11-15; tildes, "¡" y "•" sí pasan bien).
 - La fórmula solo referencia celdas de la misma fila (nombre, teléfono, N.º, cantidad) y
   la clave de Config. No copia datos del cliente dentro de la fórmula: no hay riesgo de
   inyección.

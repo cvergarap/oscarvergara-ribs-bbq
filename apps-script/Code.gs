@@ -7,7 +7,7 @@
  * de "Nueva versión" y subir VERSION abajo. La web la puede ver en el GET (campo version).
  *
  * Historial:
- *   1.3.1  2026-11-15  Emojis del mensaje de salida: el enlace se arma con ENLACE_EN_CAMINO.
+ *   1.3.1  2026-11-15  Emojis del mensaje de salida: ENLACE_EN_CAMINO y api.whatsapp.com (no wa.me).
  *   1.3.0  2026-11-15  Enlace de WhatsApp "va en camino" (columna Mensaje de salida).
  *   1.2.0  2026-11-13  Registro de interesados (pestaña Interesados) desde el popup de cierre.
  *   1.1.0  2026-11-13  Sobrepedidos registrados, autorización de publicidad y redes sociales.
@@ -503,8 +503,8 @@ function letraColumna_(indice) {
 /**
  * Enlace de WhatsApp "va en camino" (función personalizada de la hoja).
  * Se usa así: =HYPERLINK(ENLACE_EN_CAMINO(nombre; teléfono; N.º; platos; plantilla); "…").
- * Arma la URL con encodeURIComponent, que codifica bien los emojis (ENCODEURL de Sheets
- * los dañaba y WhatsApp mostraba "�"). Recibe la plantilla como argumento para que la
+ * Arma la URL con encodeURIComponent y va directo a api.whatsapp.com/send: wa.me redirige
+ * y cambia los emojis por "�". Recibe la plantilla como argumento para que la
  * hoja recalcule cuando se cambia mensaje_en_camino en Config.
  *
  * @param {string} nombre Nombre completo del cliente.
@@ -512,7 +512,7 @@ function letraColumna_(indice) {
  * @param {number} numero N.º del pedido.
  * @param {number} platos Cantidad de platos.
  * @param {string} plantilla Texto de Config (mensaje_en_camino); vacío = texto por defecto.
- * @return {string} URL https://wa.me/57… o vacío si no hay teléfono válido.
+ * @return {string} URL https://api.whatsapp.com/send?phone=57… o vacío si no hay teléfono válido.
  * @customfunction
  */
 function ENLACE_EN_CAMINO(nombre, telefono, numero, platos, plantilla) {
@@ -530,7 +530,9 @@ function enlaceEnCamino_(nombre, telefono, numero, platos, plantilla) {
     .split('{nombre}').join(primero)
     .split('{numero}').join(String(numero == null ? '' : numero))
     .split('{platos}').join(n + (n === 1 ? ' plato' : ' platos'));
-  return 'https://wa.me/57' + tel + '?text=' + encodeURIComponent(texto);
+  // api.whatsapp.com/send y no wa.me: wa.me redirige y cambia los emojis por "�"
+  // (comprobado el 2026-11-15). Abre la app igual en celular y en computador.
+  return 'https://api.whatsapp.com/send?phone=57' + tel + '&text=' + encodeURIComponent(texto);
 }
 
 /**
@@ -548,7 +550,7 @@ function formulaMensajeSalida_(mapa, fila) {
 
 /** true si la celda tiene una fórmula de "Mensaje de salida" hecha por este script. */
 function esFormulaMensajeSalida_(f) {
-  return /ENLACE_EN_CAMINO\(|wa\.me\/57/.test(String(f || ''));
+  return /ENLACE_EN_CAMINO\(|wa\.me\/57|api\.whatsapp\.com/.test(String(f || ''));
 }
 
 /**
