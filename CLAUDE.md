@@ -54,6 +54,9 @@ assets/       Logo y recursos de marca
 
 ### Backend (activo)
 - Google Apps Script como Web App, ejecutado como el dueño de la hoja.
+  Versionado: cada cambio de `Code.gs` sube `VERSION` y el historial del encabezado
+  (semver: x.y.z). Al publicar, la misma versión va en la descripción de "Nueva versión".
+  El GET devuelve `version` para saber qué hay publicado.
   Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
 - La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
 - Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa),

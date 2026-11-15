@@ -3,6 +3,16 @@
  *
  * Copyright (c) 2026 Oscar Vergara. Todos los derechos reservados. Ver LICENSE.
  *
+ * Versión: 1.3.0 (2026-11-15). Al publicar, escribir la misma versión en la descripción
+ * de "Nueva versión" y subir VERSION abajo. La web la puede ver en el GET (campo version).
+ *
+ * Historial:
+ *   1.3.0  2026-11-15  Enlace de WhatsApp "va en camino" (columna Mensaje de salida).
+ *   1.2.0  2026-11-13  Registro de interesados (pestaña Interesados) desde el popup de cierre.
+ *   1.1.0  2026-11-13  Sobrepedidos registrados, autorización de publicidad y redes sociales.
+ *   1.0.1  2026-11-13  Hora de entrega en Config.
+ *   1.0.0  2026-11-12  Primera versión: estado de la jornada y registro de pedidos.
+ *
  * Despliegue: script vinculado a la hoja de pedidos.
  *   Implementar > Nueva implementación > Aplicación web
  *   Ejecutar como: Yo   |   Quién tiene acceso: Cualquier usuario
@@ -18,6 +28,9 @@
 // ---------------------------------------------------------------------------
 // Constantes
 // ---------------------------------------------------------------------------
+
+// Versión del script (ver historial arriba). Se devuelve en el GET para saber qué hay publicado.
+var VERSION = '1.3.0';
 
 var ZONA_HORARIA = 'America/Bogota';
 
@@ -172,6 +185,7 @@ function construirEstado_() {
     municipios: ctx.municipios.map(function (m) { return m.nombre; }),
     whatsapp_numero: ctx.config.whatsapp_numero,
     redes: redes_(ctx.config),
+    version: VERSION,
     ahora: new Date().toISOString()
   };
 }

@@ -62,6 +62,10 @@ Una **nueva** implementación genera **otra** URL y rompe la web. Para actualiza
 **Implementar → Administrar implementaciones → lápiz (editar) → Versión: Nueva versión →
 Implementar**. La URL `/exec` se mantiene.
 
+En **Descripción** de la nueva versión escribir la versión del encabezado de `Code.gs`
+(por ejemplo `1.3.0 - Enlace va en camino`). Para comprobar qué quedó publicado, abrir la
+URL `/exec` en el navegador y buscar el campo `"version"`.
+
 ## 6. Probar
 Ver [`scripts/probar-webapp.sh`](../scripts/probar-webapp.sh). Los pedidos de prueba se
 borran de la hoja antes de abrir la jornada (tarea 6.3).
