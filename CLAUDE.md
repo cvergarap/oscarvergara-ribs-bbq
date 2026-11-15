@@ -57,6 +57,8 @@ assets/       Logo y recursos de marca
   Versionado: cada cambio de `Code.gs` sube `VERSION` y el historial del encabezado
   (semver: x.y.z). Al publicar, la misma versión va en la descripción de "Nueva versión".
   El GET devuelve `version` para saber qué hay publicado.
+  Publicar: `docs/despliegue-apps-script.md` sección 5. Siempre "Nueva versión" en la
+  implementación existente; nunca "Nueva implementación" (cambia la URL y rompe la web).
   Código listo en `apps-script/Code.gs`; guía en `docs/despliegue-apps-script.md`.
 - La cuenta de Google puede cambiar: la web solo conoce `VITE_APPS_SCRIPT_URL`.
 - Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa),

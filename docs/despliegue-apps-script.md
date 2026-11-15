@@ -58,13 +58,46 @@ Para revisar: elegir `probarEstado` → **Ejecutar** → ver el resultado en el 
 4. Abrir la URL en el navegador: debe mostrar el JSON del estado.
 
 ## 5. Actualizar el código sin cambiar la URL
-Una **nueva** implementación genera **otra** URL y rompe la web. Para actualizar:
-**Implementar → Administrar implementaciones → lápiz (editar) → Versión: Nueva versión →
-Implementar**. La URL `/exec` se mantiene.
 
-En **Descripción** de la nueva versión escribir la versión del encabezado de `Code.gs`
-(por ejemplo `1.3.0 - Enlace va en camino`). Para comprobar qué quedó publicado, abrir la
-URL `/exec` en el navegador y buscar el campo `"version"`.
+> **Regla de oro: "Nueva versión" sí, siempre. "Nueva implementación" nunca.**
+
+| Botón | Qué hace | ¿URL nueva? | ¿Se usa? |
+|---|---|---|---|
+| Implementar → **Nueva implementación** | Crea otra aplicación web aparte | **Sí**: la web deja de conectarse | ❌ Nunca |
+| Implementar → Administrar implementaciones → ✏️ → **Nueva versión** | Actualiza la aplicación web existente con el código guardado | **No**: misma URL | ✅ Siempre |
+
+**Guardar el código (Ctrl+S) no lo publica.** Solo cambia el borrador del editor. La web
+sigue usando la última versión publicada hasta hacer los pasos de abajo.
+
+### Paso a paso (cada vez que cambie `Code.gs`)
+1. Abrir la hoja real → **Extensiones → Apps Script** → archivo **Code.gs**.
+2. **Ctrl+A** y **Ctrl+V** con el código nuevo de la rama `main`. Revisar que la primera
+   línea sea `/**` y que al final esté la función `probarEstado`.
+3. **Guardar** (Ctrl+S). Si aparece un error en rojo, no seguir.
+4. **Implementar → Administrar implementaciones**.
+5. A la izquierda, en **Activa**, seleccionar la implementación cuya URL es la de
+   `VITE_APPS_SCRIPT_URL` en `web/.env`.
+6. Clic en el **lápiz ✏️** (arriba a la derecha de "Configuración").
+7. Abrir la casilla **Versión** y elegir **Nueva versión** (la primera opción de la lista).
+   **Paso clave:** si se deja la versión que aparece, se vuelve a publicar la anterior.
+8. **Descripción**: la versión del encabezado de `Code.gs`, por ejemplo
+   `1.3.0 - Enlace va en camino`.
+9. **Implementar**. El aviso debe decir **"Versión N"** con un número **mayor** que el
+   anterior, y la **misma URL**. Si sigue el número anterior, no quedó: repetir desde el 4.
+10. Si el cambio trae columnas o claves nuevas: elegir **`configurarHoja`** en la barra de
+    arriba → **▶ Ejecutar**. No borra datos.
+
+### Comprobar qué quedó publicado
+- Abrir la URL `/exec` en el navegador y buscar el campo `"version"` (desde la 1.3.0).
+- O pedirle a Claude que lo verifique: consulta el GET y envía una solicitud inválida que
+  no guarda nada.
+
+### Errores que ya nos pasaron (2026-11-15)
+| Síntoma | Causa | Solución |
+|---|---|---|
+| Se pegó y guardó el código, pero la web sigue igual | Faltó publicar | Pasos 4 a 9 |
+| El aviso dice "Se actualizó correctamente" pero muestra la misma "Versión N" | No se eligió **Nueva versión** en la casilla Versión | Repetir con el paso 7 |
+| La web dejó de cargar datos después de publicar | Se usó **Nueva implementación** (URL nueva) | Publicar la nueva versión en la implementación original, o poner la URL nueva en `web/.env` |
 
 ## 6. Probar
 Ver [`scripts/probar-webapp.sh`](../scripts/probar-webapp.sh). Los pedidos de prueba se
