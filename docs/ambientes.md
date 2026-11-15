@@ -72,11 +72,15 @@ copiar y pegar. **Solo se conecta a DEV**: producción se sigue publicando a man
 guía (`docs/despliegue-apps-script.md`, sección 5).
 
 ### Configuración (una vez por PC)
+Probado el 2026-11-15: push y nueva versión (@2) en DEV con la cuenta de la universidad.
+La API debe estar activada **en la misma cuenta** con la que se hace `clasp login`; si no,
+falla con "User has not enabled the Apps Script API".
+
 1. Activar la API de Apps Script en tu cuenta de Google:
    https://script.google.com/home/usersettings → **API de Google Apps Script: Activada**.
 2. Iniciar sesión (abre el navegador; autorizar con la cuenta dueña de la hoja DEV):
    ```bash
-   npx @google/clasp login
+   npx @google/clasp@3.4.1 login
    ```
    El permiso queda en `C:\Users\<tú>\.clasprc.json`, fuera del repositorio. Nunca subirlo.
 3. `apps-script/.clasp.json` guarda el ID del script DEV (no es secreto: sin permiso de la
@@ -86,9 +90,15 @@ guía (`docs/despliegue-apps-script.md`, sección 5).
 ### Uso
 ```bash
 cd apps-script
-npx @google/clasp push                 # sube Code.gs y appsscript.json al script DEV
-npx @google/clasp deploy -i AKfycbxKZkV7A14Xoh8olpff8xoD_324OGmNpD1FBfbTZu0-Nq1GUgL_T9AQd9k4XQpfQGLaMw -d "1.3.1 - descripción"
+npx @google/clasp@3.4.1 status        # qué archivos subiría (solo Code.gs y appsscript.json)
+npx @google/clasp@3.4.1 push --force  # sube el código al script DEV (= guardar en el editor)
+npx @google/clasp@3.4.1 update-deployment AKfycbxKZkV7A14Xoh8olpff8xoD_324OGmNpD1FBfbTZu0-Nq1GUgL_T9AQd9k4XQpfQGLaMw -d "1.3.1 - descripción"
 ```
-- `push` = guardar en el editor. `deploy -i <ID>` = **Nueva versión** de la implementación
-  existente (misma URL). Nunca `clasp deploy` sin `-i`: crea una implementación nueva.
+- `push --force` = guardar en el editor (sin `--force`, clasp 3.4.1 responde "Skipping push"
+  porque pide confirmar el reemplazo del manifiesto). `update-deployment <ID>` = **Nueva versión** de la
+  implementación existente (misma URL). **Nunca** `create-deployment` (o `deploy` sin ID):
+  crea una implementación nueva con otra URL.
+- `apps-script/.clasp.json` apunta al script DEV y `apps-script/.claspignore` limita lo que
+  se sube a `Code.gs` y `appsscript.json`.
 - Si el cambio trae columnas nuevas: ejecutar `configurarHoja` en el editor de la hoja DEV.
+- Comprobar: abrir la URL `/exec` de DEV y revisar `"version"`.

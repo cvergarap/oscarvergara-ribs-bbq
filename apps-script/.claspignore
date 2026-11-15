@@ -1,0 +1,5 @@
+# clasp sube a script.google.com solo lo que no esté ignorado aquí.
+# Este proyecto solo tiene dos archivos de Apps Script.
+**/**
+!Code.gs
+!appsscript.json
