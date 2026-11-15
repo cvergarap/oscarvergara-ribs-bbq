@@ -22,8 +22,8 @@ un formulario. Idioma del proyecto: español.
 web/          Frontend: React + Vite + TypeScript + Tailwind (se publica en Cloudflare Pages)
 apps-script/  Backend en Google Apps Script (Code.gs + appsscript.json)
 openspec/     Especificaciones, diseño y tareas
-docs/         Guías: configuracion-git, flujo-ramas, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
-scripts/      probar-webapp.sh (pruebas del Web App)
+docs/         Guías: ambientes, configuracion-git, flujo-ramas, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
+scripts/      probar-webapp.sh (pruebas del Web App), backend-simulado.js (simulador local)
 assets/       Logo y recursos de marca
 ```
 
@@ -138,7 +138,12 @@ formulario en el centro, testimonios y galería de clientes al final.
 - Ramas (desde 2026-11-13, ver `docs/flujo-ramas.md`): todo lo nuevo sale de `dev`
   en una rama de trabajo y vuelve a `dev`; `qa` se prueba en local; `main` es producción
   (Cloudflare). Nunca trabajar directo en `main`. Las pruebas en local no escriben en la
-  hoja de producción: usar `web/.env.local` con una hoja de pruebas o vacío.
+  hoja de producción: `npm run dev` usa `web/.env.development` (hoja DEV) y
+  `npm run dev:simulado` el simulador local. Ver `docs/ambientes.md`. `npm run preview`
+  apunta a PROD: no enviar datos desde ahí.
+- Ambientes (desde 2026-11-15): PROD = hoja real (`web/.env`, Cloudflare); DEV = copia
+  "RIBS BBQ - DEV" sin clientes reales (`web/.env.development`). clasp solo se conecta a
+  DEV (`apps-script/.clasp.json`); PROD se publica a mano.
 
 ## Siguiente paso
 1. Web publicada en https://oscarvergara-ribs-bbq.pages.dev (Cloudflare Pages, cuenta del
