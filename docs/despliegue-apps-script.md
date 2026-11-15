@@ -48,6 +48,19 @@ los emojis). No sale en los sobrepedidos. El enlace lo arma la función `ENLACE_
 del script y va a `api.whatsapp.com/send`. **No usar enlaces `wa.me` con emojis**: `wa.me`
 redirige y los cambia por "�".
 
+Pruebas del 2026-11-15 con un mensaje con 🔥 y 📲:
+
+| Dispositivo | Enlace | Resultado |
+|---|---|---|
+| Celular | `https://api.whatsapp.com/send?phone=…&text=…` | Abre la app siempre; emojis bien. **Es el que usa la hoja.** |
+| Celular | `whatsapp://send?…` | Abre la app solo la primera vez. No usar. |
+| Celular y PC | `https://wa.me/…?text=…` | Cambia los emojis por "�". No usar. |
+| PC | Cualquiera de los anteriores | No abre WhatsApp de escritorio y daña los emojis. |
+
+Por eso **los mensajes de salida se envían desde el celular**. Desde el PC el enlace abre el
+chat, pero los emojis llegan mal: ahí conviene copiar el texto y pegarlo, o usar Config sin
+emojis.
+
 Pestaña **Interesados** (Fecha, Nombre, Teléfono, Acepta publicidad): la llena la web
 cuando alguien llega con los pedidos cerrados y pide aviso de la próxima jornada. No se
 edita a mano y no afecta el cupo.

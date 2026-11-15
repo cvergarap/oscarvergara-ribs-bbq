@@ -23,6 +23,9 @@ listo ahorra tiempo cuando salen los domicilios.
   esas fórmulas viejas.
 - El enlace va a `api.whatsapp.com/send` y no a `wa.me`: `wa.me` redirige y cambia todos los
   emojis por "�" (comprobado el 2026-11-15; tildes, "¡" y "•" sí pasan bien).
+- Pruebas del dueño (2026-11-15): en celular `api.whatsapp.com/send` abre la app siempre con
+  los emojis bien; en PC ningún enlace abre WhatsApp de escritorio y los emojis se dañan.
+  Los mensajes de salida se envían desde el celular.
 - La fórmula solo referencia celdas de la misma fila (nombre, teléfono, N.º, cantidad) y
   la clave de Config. No copia datos del cliente dentro de la fórmula: no hay riesgo de
   inyección.
