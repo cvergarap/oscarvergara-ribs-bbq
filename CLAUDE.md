@@ -22,7 +22,7 @@ un formulario. Idioma del proyecto: español.
 web/          Frontend: React + Vite + TypeScript + Tailwind (se publica en Cloudflare Pages)
 apps-script/  Backend en Google Apps Script (Code.gs + appsscript.json)
 openspec/     Especificaciones, diseño y tareas
-docs/         Guías: ambientes, configuracion-git, flujo-ramas, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
+docs/         Guías: contexto-completo (respaldo integral), ambientes, configuracion-git, flujo-ramas, despliegue-cloudflare, despliegue-apps-script, lovable-prompt
 scripts/      probar-webapp.sh (pruebas del Web App), backend-simulado.js (simulador local)
 assets/       Logo y recursos de marca
 ```
@@ -64,7 +64,7 @@ assets/       Logo y recursos de marca
 - Pestañas: "Pedidos", "Config" (clave/valor), "Salsas" (Nombre, Descripción, Activa),
   "Municipios" (Nombre, Activo) e "Interesados" (Fecha, Nombre, Teléfono, Acepta
   publicidad). `configurarHoja()` las crea sin borrar datos.
-- Cierre (rama `propuesta-popup-cierre-fechas`, sin publicar): con los pedidos cerrados la
+- Cierre (en producción desde 2026-11-15): con los pedidos cerrados la
   web muestra un popup "foto finish" con mensaje único; "Avísame en la próxima" cambia el
   contenido por un formulario (nombre, celular, autorización obligatoria) que guarda en
   "Interesados". Ver `openspec/changes/add-cierre-interesados/`.
